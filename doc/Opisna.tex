@@ -1,0 +1,113 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+%\documentclass[a4paper,12pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 3 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2009-02-2#$ $}
+\newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
+%\usepackage{babel}
+%\input{abpkgB}
+%\input{abpkg}
+\input{abBeam}
+\input{abcmd}
+%\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\input{mysweaveB}
+\newcommand{\BV}{}
+\newcommand{\EV}{}
+\newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
+\input{./figs/SwPres-concordance}
+%\SweaveOpts{echo=false}
+%\usepackage{lmodern}
+%\input{abfont}
+%\SweaveOpts{keep.source=true}
+% ----------------------------------------------------------------
+\title{RPS\\Analiza podatkov}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\begin{document}
+\mode<article> {\maketitle}
+\mode<presentation> {\frame{\titlepage}}
+\tableofcontents
+% ----------------------------------------------------------------
+\begin{abstract}
+ Primer analize podatkov
+\end{abstract}
+% -------------------------------------------------------------
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+% \setkeys{Gin}{width=0.9\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
+% ----------------------------------------------------------------
+O rasti in velikosti ljudi imamo nekaj mnenj, ki jih lahko izrazimo v obliki raziskovalnih vprašanj. Najprej si zastavimo vprašanja.
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Vprašanja}
+Nekaj vprašanj, na katere bi radi odgovorili je:
+\begin{itemize}
+  \item Ali so fantje večji od deklet?
+  \item Ali so fantje težji od deklet?
+  \item Ali sta razpon rok in višina približno enaka?
+  \item Ali drži Galtonovo opažanje glede višine otrok in staršev?
+  \item ...
+\end{itemize}
+Zbrali smo nekaj podatkov o študentih, s katerimi si bomo lahko poskusili odgovoriti.
+\end{frame}
+%% <<<<<<---------------------|
+Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker predvidevamo, da nas bo zanimalo še kaj, zberemo podatke o še nekaj spremenljivkah.
+\begin{Schunk}
+\begin{Sinput}
+> lfn <- "Podatki2012.txt"
+> 
+\end{Sinput}
+\end{Schunk}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Podatki}
+Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn}.
+\begin{Schunk}
+\begin{Sinput}
+> fpath <- file.path("../data",lfn)
+> data <- read.table(fpath,header=TRUE,sep="\t")
+> names(data)
+\end{Sinput}
+\begin{Soutput}
+ [1] "starost" "mesec"   "spol"    "masa"    "visina"  "roke"   
+ [7] "cevelj"  "lasje"   "oci"     "mati"    "oce"     "majica" 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+
+
+
+
+
+% ----------------------------------------------------------------
+%\bibliographystyle{amsplain}
+%\bibliography{ab-general}
+\end{document}
+% ----------------------------------------------------------------
