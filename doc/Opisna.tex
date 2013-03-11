@@ -212,7 +212,8 @@ data$spol: M
 \frametitle{Moški}
 \begin{Schunk}
 \begin{Sinput}
-> with(data, plot(oce, visina, col = spol, pch = 16))
+> with(data, plot(oce, visina, col = spol, pch = 16, 
++     xlim = range(visina)))
 > abline(c(0, 1))
 > abline(lm(visina ~ oce, data = data), col = 3, 
 +     lwd = 3)
@@ -237,7 +238,8 @@ data$spol: M
 \frametitle{Ženske}
 \begin{Schunk}
 \begin{Sinput}
-> with(data, plot(mati, visina, col = spol, pch = 16))
+> with(data, plot(mati, visina, col = spol, pch = 16, 
++     xlim = range(visina)))
 > abline(c(0, 1))
 > abline(lm(visina ~ mati, data = data), col = 3, 
 +     lwd = 3)
