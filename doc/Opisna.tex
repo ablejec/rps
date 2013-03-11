@@ -30,7 +30,7 @@
 %\SweaveOpts{echo=false}
 %\usepackage{lmodern}
 %\input{abfont}
-%\SweaveOpts{keep.source=true}
+
 % ----------------------------------------------------------------
 \title{RPS\\Analiza podatkov}
 \author{A. Blejec}
@@ -77,7 +77,6 @@ Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker pr
 \begin{Schunk}
 \begin{Sinput}
 > lfn <- "Podatki2012.txt"
-> 
 \end{Sinput}
 \end{Schunk}
 
@@ -87,21 +86,183 @@ Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker pr
 Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn}.
 \begin{Schunk}
 \begin{Sinput}
-> fpath <- file.path("../data",lfn)
-> data <- read.table(fpath,header=TRUE,sep="\t")
+> fpath <- file.path("../data", lfn)
+> data <- read.table(fpath, header = TRUE, sep = "\t")
 > names(data)
 \end{Sinput}
 \begin{Soutput}
- [1] "starost" "mesec"   "spol"    "masa"    "visina"  "roke"   
- [7] "cevelj"  "lasje"   "oci"     "mati"    "oce"     "majica" 
+ [1] "starost" "mesec"   "spol"    "masa"    "visina" 
+ [6] "roke"    "cevelj"  "lasje"   "oci"     "mati"   
+[11] "oce"     "majica" 
 \end{Soutput}
 \end{Schunk}
 \end{frame}
 %% <<<<<<---------------------|
 
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Opisna statistika}
+\begin{Schunk}
+\begin{Sinput}
+> summary(data[, 1:6])
+\end{Sinput}
+\begin{Soutput}
+    starost          mesec        spol        masa      
+ Min.   :20.00   Min.   : 0.000   F:33   Min.   :50.00  
+ 1st Qu.:21.00   1st Qu.: 5.000   M:10   1st Qu.:55.50  
+ Median :21.00   Median : 7.000          Median :61.00  
+ Mean   :22.07   Mean   : 6.814          Mean   :63.42  
+ 3rd Qu.:22.00   3rd Qu.: 9.500          3rd Qu.:70.00  
+ Max.   :59.00   Max.   :11.000          Max.   :91.00  
+                                                        
+     visina           roke      
+ Min.   :156.0   Min.   :154.0  
+ 1st Qu.:164.0   1st Qu.:163.2  
+ Median :170.0   Median :167.8  
+ Mean   :169.9   Mean   :169.3  
+ 3rd Qu.:173.5   3rd Qu.:172.5  
+ Max.   :189.0   Max.   :193.0  
+                 NA's   :5      
+\end{Soutput}
+\end{Schunk}
+Ali kaj opazite?
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Nenavadni podatki}
+Kaj storiti s tistim, ki je napisal, da je rojen v mesecu 0?
+
+Eden pa je star 59 let??
+\end{frame}
+%% <<<<<<---------------------|
 
 
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Nadaljevanje opisa}
+\begin{Schunk}
+\begin{Sinput}
+> summary(data[, 7:dim(data)[2]])
+\end{Sinput}
+\begin{Soutput}
+     cevelj      lasje  oci         mati      
+ Min.   :36.00   S:19   S:24   Min.   :155.0  
+ 1st Qu.:38.00   T:24   T:19   1st Qu.:160.0  
+ Median :39.00                 Median :165.0  
+ Mean   :40.02                 Mean   :165.4  
+ 3rd Qu.:41.50                 3rd Qu.:168.0  
+ Max.   :48.00                 Max.   :180.0  
+                               NA's   :5      
+      oce        majica 
+ Min.   :170.0   L : 5  
+ 1st Qu.:174.2   M :19  
+ Median :179.5   S :16  
+ Mean   :179.1   XL: 1  
+ 3rd Qu.:182.0   XS: 2  
+ Max.   :190.0          
+ NA's   :5              
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
 
+\section{Višina in spol}
+
+Primerjajte razpone vrednosti višin študentov in staršev.
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Višina po spolu}
+Povzetek višin glede na spol
+\begin{Schunk}
+\begin{Sinput}
+> summary(data$mati)
+\end{Sinput}
+\begin{Soutput}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+  155.0   160.0   165.0   165.4   168.0   180.0       5 
+\end{Soutput}
+\begin{Sinput}
+> by(data$visina, data$spol, summary)
+\end{Sinput}
+\begin{Soutput}
+data$spol: F
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  156.0   163.0   168.0   166.8   170.0   178.0 
+--------------------------------------------- 
+data$spol: M
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  171.0   178.5   180.0   180.0   182.5   189.0 
+\end{Soutput}
+\begin{Sinput}
+> summary(data$oce)
+\end{Sinput}
+\begin{Soutput}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+  170.0   174.2   179.5   179.1   182.0   190.0       5 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{Galton in višina otrok in staršev}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Moški}
+\begin{Schunk}
+\begin{Sinput}
+> with(data, plot(oce, visina, col = spol, pch = 16))
+> abline(c(0, 1))
+> abline(lm(visina ~ oce, data = data), col = 3, 
++     lwd = 3)
+> abline(lm(visina ~ oce, data = data[data$spol == 
++     "M", ]), col = "red", lwd = 3)
+> abline(lm(visina ~ oce, data = data[data$spol == 
++     "F", ]), col = "blue", lwd = 3)
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Moški}
+\includegraphics{./figs/SwPres-moski}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Ženske}
+\begin{Schunk}
+\begin{Sinput}
+> with(data, plot(mati, visina, col = spol, pch = 16))
+> abline(c(0, 1))
+> abline(lm(visina ~ mati, data = data), col = 3, 
++     lwd = 3)
+> abline(lm(visina ~ mati, data = data[data$spol == 
++     "M", ]), col = "red", lwd = 3)
+> abline(lm(visina ~ mati, data = data[data$spol == 
++     "F", ]), col = "blue", lwd = 3)
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Ženske}
+\includegraphics{./figs/SwPres-zenske}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Moški}
+\includegraphics{./figs/SwPres-moski2}
+\end{frame}
+%% <<<<<<---------------------|
 
 
 
@@ -109,5 +270,44 @@ Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{l
 % ----------------------------------------------------------------
 %\bibliographystyle{amsplain}
 %\bibliography{ab-general}
+\clearpage
+\section*{SessionInfo}
+{\small
+Windows 7 x64 (build 7601) Service Pack 1 \begin{itemize}\raggedright
+  \item R version 2.15.1 (2012-06-22), \verb|x86_64-pc-mingw32|
+  \item Locale: \verb|LC_COLLATE=Slovenian_Slovenia.1250|, \verb|LC_CTYPE=Slovenian_Slovenia.1250|, \verb|LC_MONETARY=Slovenian_Slovenia.1250|, \verb|LC_NUMERIC=C|, \verb|LC_TIME=Slovenian_Slovenia.1250|
+  \item Base packages: base, datasets, graphics,
+    grDevices, stats, utils
+  \item Other packages: patchDVI~1.9
+  \item Loaded via a namespace (and not attached):
+    tools~2.15.1
+\end{itemize}Project path:\verb' D:/_Y/R/rps '\\Main file :\verb' ../doc/Opisna.Rnw '
+\subsection*{View as vignette}
+Project files can be viewed by pasting this code to \R\ console:\\
+\begin{Schunk}
+\begin{Sinput}
+> projectName <-"rps";  mainFile <-"Opisna"
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+> commandArgs()
+> library(tkWidgets)
+> openPDF(file.path(dirname(getwd()), "doc", paste(mainFile, 
++     "PDF", sep = ".")))
+> viewVignette("viewVignette", projectName, file.path("../doc", 
++     paste(mainFile, "Rnw", sep = ".")))
+\end{Sinput}
+\end{Schunk}
+
+\vfill \hrule \vspace{3pt} \footnotesize{
+%Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
+%\SVNRevision ~/~ \SVNDate
+\noindent
+\texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
+\texttt{ \gitReferences} \hfill \verb'../doc/Opisna.Rnw'\\
+
+}
+
 \end{document}
 % ----------------------------------------------------------------

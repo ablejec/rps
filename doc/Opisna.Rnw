@@ -30,7 +30,7 @@
 %\SweaveOpts{echo=false}
 %\usepackage{lmodern}
 %\input{abfont}
-%\SweaveOpts{keep.source=true}
+\SweaveOpts{keep.source=FALSE}
 % ----------------------------------------------------------------
 \title{RPS\\Analiza podatkov}
 \author{A. Blejec}
@@ -66,7 +66,7 @@
 ###################################################
 @
 <<initialize,echo=false,results=hide>>=
-options(width=70)
+options(width=60)
 #library(Hmisc)
 #library(xlsReadWrite)
 @
@@ -103,9 +103,108 @@ names(data)
 \end{frame}
 %% <<<<<<---------------------|
 
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Opisna statistika}
+<<povzetek>>=
+summary(data[,1:6])
+
+@
+Ali kaj opazite?
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Nenavadni podatki}
+Kaj storiti s tistim, ki je napisal, da je rojen v mesecu 0?
+
+Eden pa je star 59 let??
+\end{frame}
+%% <<<<<<---------------------|
 
 
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Nadaljevanje opisa}
+<<opisna>>=
+summary(data[,7:dim(data)[2]])
+@
+\end{frame}
+%% <<<<<<---------------------|
 
+\section{Višina in spol}
+
+Primerjajte razpone vrednosti višin študentov in staršev.
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Višina po spolu}
+Povzetek višin glede na spol
+<<>>=
+summary(data$mati)
+by(data$visina,data$spol,summary)
+summary(data$oce)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{Galton in višina otrok in staršev}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Moški}
+<<sl1,eval=FALSE>>=
+with(data, plot(oce, visina, col=spol, pch=16))
+abline(c(0,1))
+abline(lm(visina~oce, data=data), col=3,lwd=3)
+abline(lm(visina~oce, data=data[data$spol=="M",]), col="red", lwd=3)
+abline(lm(visina~oce, data=data[data$spol=="F",]), col="blue", lwd=3)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Moški}
+<<moski,fig=TRUE,echo=FALSE>>=
+<<sl1>>
+@
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Ženske}
+<<sl2,eval=FALSE>>=
+with(data, plot(mati, visina, col=spol, pch=16))
+abline(c(0,1))
+abline(lm(visina~mati, data=data), col=3,lwd=3)
+abline(lm(visina~mati, data=data[data$spol=="M",]), col="red", lwd=3)
+abline(lm(visina~mati, data=data[data$spol=="F",]), col="blue", lwd=3)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Ženske}
+<<zenske,fig=TRUE,echo=FALSE>>=
+<<sl2>>
+@
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Moški}
+<<moski2,fig=TRUE,echo=FALSE>>=
+<<sl1>>
+@
+@
+\end{frame}
+%% <<<<<<---------------------|
 
 
 
@@ -114,10 +213,52 @@ names(data)
 %\bibliographystyle{amsplain}
 %\bibliography{ab-general}
 \clearpage
+\section*{SessionInfo}
+{\small
+<<sessionInfo,results=tex,echo=false>>=
+cat(win.version(),"\n")
+toLatex(sessionInfo())
+cat("Project path:\\verb'",dirname(getwd()),"'\\\\\n")
+mainFile <- commandArgs(trailingOnly = TRUE)
+#
+mainFilePath <- file.path("../doc", mainFile[1])
+cat("Main file :\\verb'", mainFilePath, "'\n")
+#
+mainFile <- strsplit(mainFile,'.',fixed=TRUE)[[1]][1]
+projectName <- rev((strsplit(dirname(getwd()), "/"))[[1]])[1]
+#
+@
+
+\subsection*{View as vignette}
+Project files can be viewed by pasting this code to \R\ console:\\
+\begin{Schunk}
+\begin{Sinput}
+<<projectFiles,echo=false,results=tex>>=
+cat('> projectName <-"',projectName,'"; ',sep="")
+cat(' mainFile <-"',mainFile,'"',sep="")
+#
+@
+
+\end{Sinput}
+\end{Schunk}
+<<vignette,eval=false>>=
+commandArgs()
+library(tkWidgets)
+openPDF(file.path(dirname(getwd()),"doc",
+paste(mainFile,"PDF",sep=".")))
+viewVignette("viewVignette", projectName, #
+file.path("../doc",paste(mainFile,"Rnw",sep=".")))
+#
+@
+
 \vfill \hrule \vspace{3pt} \footnotesize{
+%Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
+%\SVNRevision ~/~ \SVNDate
 \noindent
 \texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
 \texttt{ \gitReferences} \hfill \verb'\Sexpr{mainFilePath}'\\
+
 }
+
 \end{document}
 % ----------------------------------------------------------------

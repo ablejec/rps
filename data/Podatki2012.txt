@@ -12,7 +12,7 @@ starost	mesec	spol	masa	visina	roke	cevelj	lasje	oci	mati	oce	majica
 21	9	F	65	170	169	40	S	S			L
 21	7	F	55	164	167.5	37	T	T	160	175	S
 20	2	F	51	156	154	38	S	S	158	182	XS
-23	6	F	56	170	170	39	T		165	173	S
+23	6	F	56	170	170	39	T	S	165	173	S
 21	2	F	56	167	166	39	S	S	160	180	S
 21	10	M	75	185	193	45	S	S			M
 21	6	F	63	170	165	40	T	T			M
