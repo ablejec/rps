@@ -113,5 +113,11 @@ names(data)
 % ----------------------------------------------------------------
 %\bibliographystyle{amsplain}
 %\bibliography{ab-general}
+\clearpage
+\vfill \hrule \vspace{3pt} \footnotesize{
+\noindent
+\texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
+\texttt{ \gitReferences} \hfill \verb'\Sexpr{mainFilePath}'\\
+}
 \end{document}
 % ----------------------------------------------------------------

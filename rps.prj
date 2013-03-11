@@ -1,16 +1,38 @@
-275 Patch Control
+2 Patch Control
 
 0
 0
 1
-
+doc\Opisna.Rnw
+7
+1
 0
-0
-0
 
+doc\Opisna.Rnw
+Tex:Rnw
+269496315 0 -1 3354 -1 3635 30 30 750 407 0 35 1743 -1 -1 0 0 -1 -1 -1 -1 1 0 3635 -1   0
+doc\OpisnaS.tex
+TeX
+269496315 0 -1 784 -1 790 60 60 780 437 0 155 441 -1 -1 0 0 42 -1 -1 42 1 0 790 -1   0
+:\_Y\localtexmf\tex\abcmd.tex
+TeX
+1060859 0 -1 0 -1 0 60 60 473 437 0 25 -1858 -1 -1 0 0 -1 -1 -1 -1 1 0 0 -1   0
+:\_Y\localtexmf\tex\abBeam.tex
+TeX
+1060859 0 -1 0 -1 0 90 90 503 467 0 25 0 -1 -1 0 0 -1 -1 -1 -1 1 0 0 -1   0
+:\_Y\localtexmf\tex\mysweaveB.tex
+TeX
+269496315 0 -1 0 -1 67 120 120 533 497 0 185 -1081 -1 -1 0 0 -1 -1 -1 -1 1 0 67 -1   0
+doc\OpisnaA.tex
+TeX
+269496315 0 -1 179 -1 185 90 90 810 467 0 155 168 -1 -1 0 0 37 -1 -1 37 1 0 185 -1   0
+C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii
+DATA:UNIX
+273776882 7 136 53 136 66 150 150 870 527 1 733 252 -1 -1 0 0 -1 -1 -1 -1 1 0 66 136   0
 
-
-
-
-
-
+*doc\Opisna.Rnw
+>
+*abBeam
+*abcmd
+*mysweaveB
+<
