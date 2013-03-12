@@ -131,7 +131,7 @@ summary(data[,7:dim(data)[2]])
 @
 \end{frame}
 %% <<<<<<---------------------|
-
+\clearpage
 \section{Višina in spol}
 
 Primerjajte razpone vrednosti višin študentov in staršev.
@@ -147,7 +147,7 @@ summary(data$oce)
 @
 \end{frame}
 %% <<<<<<---------------------|
-
+\clearpage
 \section{Galton in višina otrok in staršev}
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
