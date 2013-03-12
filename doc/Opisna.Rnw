@@ -14,7 +14,7 @@
 \newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
 %\usepackage{babel}
 %\input{abpkgB}
-%\input{abpkg}
+%\input{abpkg} 
 \input{abBeam}
 \input{abcmd}
 %\input{abpage}
@@ -151,7 +151,7 @@ summary(data$oce)
 \section{Galton in višina otrok in staršev}
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Moški}
+\frametitle{Fantje}
 <<sl1,eval=FALSE>>=
 with(data, plot(oce, visina, col=spol, pch=16,xlim=range(visina)))
 abline(c(0,1))
@@ -164,17 +164,17 @@ abline(lm(visina~oce, data=data[data$spol=="F",]), col="blue", lwd=3)
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Moški}
+\frametitle{Fantje}
 <<moski,fig=TRUE,echo=FALSE>>=
 <<sl1>>
 @
 @
 \end{frame}
 %% <<<<<<---------------------|
-
+\clearpage
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Ženske}
+\frametitle{Dekleta}
 <<sl2,eval=FALSE>>=
 with(data, plot(mati, visina, col=spol, pch=16,xlim=range(visina)))
 abline(c(0,1))
@@ -188,24 +188,25 @@ abline(lm(visina~mati, data=data[data$spol=="F",]), col="blue", lwd=3)
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Ženske}
+\frametitle{Dekleta}
 <<zenske,fig=TRUE,echo=FALSE>>=
 <<sl2>>
-@
-@
+@@
 \end{frame}
 %% <<<<<<---------------------|
-
+\clearpage
+\setkeys{Gin}{width=0.9\textwidth}
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Moški}
+\frametitle{Fantje in dekleta}
 <<moski2,fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,2))
 <<sl1>>
-@
-@
+<<sl2>>
+@@@
 \end{frame}
 %% <<<<<<---------------------|
-
+ \setkeys{Gin}{width=0.7\textwidth}
 
 
 
