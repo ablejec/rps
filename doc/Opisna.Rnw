@@ -96,7 +96,7 @@ lfn <- "Podatki2012.txt"
 \frametitle{Podatki}
 Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn} in na \url{http://bit.ly/16oBVpR}
 <<Preberi podatke>>=
-fpath <- file.path("../data",lfn)
+#fpath <- file.path("../data",lfn)
 fpath <- "http://bit.ly/16oBVpR"
 data <- read.table(fpath,header=TRUE,sep="\t")
 names(data)
@@ -111,7 +111,7 @@ names(data)
 summary(data[,1:6])
 
 @
-Ali kaj opazite?
+Ali pri podatkih kaj opazite?
 \end{frame}
 %% <<<<<<---------------------|
 %% |--------------------->>>>>>
