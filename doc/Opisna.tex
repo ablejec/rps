@@ -14,7 +14,7 @@
 \newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
 %\usepackage{babel}
 %\input{abpkgB}
-%\input{abpkg}
+%\input{abpkg} 
 \input{abBeam}
 \input{abcmd}
 %\input{abpage}
@@ -83,10 +83,11 @@ Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker pr
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Podatki}
-Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn}.
+Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn} in na \url{http://bit.ly/16oBVpR}
 \begin{Schunk}
 \begin{Sinput}
 > fpath <- file.path("../data", lfn)
+> fpath <- "http://bit.ly/16oBVpR"
 > data <- read.table(fpath, header = TRUE, sep = "\t")
 > names(data)
 \end{Sinput}
@@ -205,8 +206,185 @@ data$spol: M
 \end{Schunk}
 \end{frame}
 %% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Doseg  spremenljivk v objektu \code{data.frame}}
+Poglejte kakšne so vrednosti spremenljivke \code{visina}!\\
+Ali je v delovnem prostoru (workspace)?\\
+Do spremenljivk lahko pridem posredno na več načinov
+\begin{itemize}
+  \item \code{data\$visina}
+  \item \code{data[,\"visina\"]}
+  \item \code{data[,5]}
+\end{itemize}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Neposreden dostop}
+Neposreden dostop do spremenljivk omogoči
+\begin{Schunk}
+\begin{Sinput}
+> attach(data)
+> length(visina)
+\end{Sinput}
+\begin{Soutput}
+[1] 43
+\end{Soutput}
+\begin{Sinput}
+> visina[1:5]
+\end{Sinput}
+\begin{Soutput}
+[1] 178 173 178 167 171
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+Grafični prikazi
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Grafični prikaz podatkov}
+\mode<presentation> {\mode<presentation> {\vspace{-1cm}}}
+\begin{Schunk}
+\begin{Sinput}
+> plot(visina)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/SwPres-009}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Grafični prikaz podatkov}
+\mode<presentation> {\vspace{-1cm}}
+\begin{Schunk}
+\begin{Sinput}
+> plot(visina, pch = 16, col = spol)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/SwPres-010}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kumulativa}
+\mode<presentation> {\vspace{-1cm}}
+\begin{Schunk}
+\begin{Sinput}
+> x <- visina
+> plot(x, rank(x), pch = 16, col = spol)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/SwPres-011}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kumulativa in normalna aproksimacija}
+\mode<presentation> {\vspace{-1cm}}
+\begin{Schunk}
+\begin{Sinput}
+> x <- visina
+> plot(x, rank(x), pch = 16, col = spol)
+> q <- qnorm((rank(x) - 0.5)/length(x), mean(x), 
++     sd(x))
+> points(q, rank(x), col = 4)
+> segments(x, rank(x), q, rank(x))
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/SwPres-012}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Slika kvantilov}
+\mode<presentation> {\vspace{-1cm}}
+\begin{Schunk}
+\begin{Sinput}
+> qqnorm(visina, col = spol, pch = 16)
+> qqline(visina)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/SwPres-013}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Boxplot}
+\mode<presentation> {\vspace{-1cm}}
+\begin{Schunk}
+\begin{Sinput}
+> boxplot(visina ~ spol, col = c("pink", "lightblue"))
+> rug(visina[spol == "F"], side = 2)
+> rug(visina[spol == "M"], side = 4)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/SwPres-014}
+
+Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}. 
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{Testiranje višin}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Student t-test}
+\begin{Schunk}
+\begin{Sinput}
+> t.test(visina ~ spol)
+\end{Sinput}
+\begin{Soutput}
+	Welch Two Sample t-test
+
+data:  visina by spol 
+t = -6.8838, df = 15.244, p-value = 4.77e-06
+alternative hypothesis: true difference in means is not equal to 0 
+95 percent confidence interval:
+ -17.257671  -9.105965 
+sample estimates:
+mean in group F mean in group M 
+       166.8182        180.0000 
+\end{Soutput}
+\end{Schunk}
+Lahko tudi tako:
+\begin{Schunk}
+\begin{Sinput}
+> t.test(visina[spol == "F"], visina[spol == "M"])
+\end{Sinput}
+\end{Schunk}
+Oglejte si, kaj vrne funkcija \fct{t.test}. Dorišite točki povprečij.
+\end{frame}
+%% <<<<<<---------------------|
+\clearpage
+\section{Teža}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Teža in spol}
+Izberite si nekaj prejšnjih prikazov in
+\begin{itemize}
+  \item Raziščite kako je s težo pri dekletih in fantih.
+  \item Kaj pa velja za BMI ($BMI=masa/visina^2$)
+\end{itemize}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+
 \clearpage
 \section{Galton in višina otrok in staršev}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Velikost staršev in potomcev}
+Galton je ugotavljal korelacijo med velikostjo staršev in potomcev.
+
+Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in potomcev v posebnem razmerju, ki zagotavlja 'regesijo' k povprečju.
+\end{frame}
+%% <<<<<<---------------------|
+
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Fantje}

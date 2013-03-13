@@ -14,7 +14,7 @@
 \newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
 %\usepackage{babel}
 %\input{abpkgB}
-%\input{abpkg} 
+%\input{abpkg}
 \input{abBeam}
 \input{abcmd}
 %\input{abpage}
@@ -94,9 +94,10 @@ lfn <- "Podatki2012.txt"
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Podatki}
-Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn}.
+Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn} in na \url{http://bit.ly/16oBVpR}
 <<Preberi podatke>>=
 fpath <- file.path("../data",lfn)
+fpath <- "http://bit.ly/16oBVpR"
 data <- read.table(fpath,header=TRUE,sep="\t")
 names(data)
 @
@@ -147,17 +148,149 @@ summary(data$oce)
 @
 \end{frame}
 %% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Doseg  spremenljivk v objektu \code{data.frame}}
+Poglejte kakšne so vrednosti spremenljivke \code{visina}!\\
+Ali je v delovnem prostoru (workspace)?\\
+Do spremenljivk lahko pridem posredno na več načinov
+\begin{itemize}
+  \item \code{data\$visina}
+  \item \code{data[,\"visina\"]}
+  \item \code{data[,5]}
+\end{itemize}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Neposreden dostop}
+Neposreden dostop do spremenljivk omogoči
+<<>>=
+attach(data)
+length(visina)
+visina[1:5]
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+Grafični prikazi
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Grafični prikaz podatkov}
+\mode<presentation> {\mode<presentation> {\vspace{-1cm}}}
+<<fig=TRUE,height=5>>=
+plot(visina)
+@
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Grafični prikaz podatkov}
+\mode<presentation> {\vspace{-1cm}}
+<<fig=TRUE,height=5>>=
+plot(visina, pch=16,col=spol)
+@
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kumulativa}
+\mode<presentation> {\vspace{-1cm}}
+<<fig=TRUE,height=5>>=
+x <- visina
+plot(x,rank(x),pch=16,col=spol)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kumulativa in normalna aproksimacija}
+\mode<presentation> {\vspace{-1cm}}
+<<fig=TRUE,height=5>>=
+x <- visina
+plot(x,rank(x),pch=16,col=spol)
+q <- qnorm((rank(x)-0.5)/length(x),mean(x),sd(x))
+points(q,rank(x),col=4)
+segments(x,rank(x),q,rank(x))
+@
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Slika kvantilov}
+\mode<presentation> {\vspace{-1cm}}
+<<fig=TRUE,height=5>>=
+qqnorm(visina,col=spol,pch=16)
+qqline(visina)
+@
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Boxplot}
+\mode<presentation> {\vspace{-1cm}}
+<<fig=TRUE,height=5>>=
+boxplot(visina~spol,col=c("pink","lightblue"))
+rug(visina[spol=="F"],side=2)
+rug(visina[spol=="M"],side=4)
+@
+
+Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}.
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{Testiranje višin}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Student t-test}
+<<>>=
+t.test(visina~spol)
+@
+Lahko tudi tako:
+<<eval=FALSE>>=
+t.test(visina[spol=="F"],visina[spol=="M"])
+@
+Oglejte si, kaj vrne funkcija \fct{t.test}. Dorišite točki povprečij.
+\end{frame}
+%% <<<<<<---------------------|
+\clearpage
+\section{Teža}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Teža in spol}
+Izberite si nekaj prejšnjih prikazov in
+\begin{itemize}
+  \item Raziščite kako je s težo pri dekletih in fantih.
+  \item Kaj pa velja za BMI ($BMI=masa/visina^2$)
+\end{itemize}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+
 \clearpage
 \section{Galton in višina otrok in staršev}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Velikost staršev in potomcev}
+Galton je ugotavljal korelacijo med velikostjo staršev in potomcev.
+
+Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in potomcev v posebnem razmerju, ki zagotavlja 'regesijo' k povprečju.
+\end{frame}
+%% <<<<<<---------------------|
+
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Fantje}
 <<sl1,eval=FALSE>>=
 with(data, plot(oce, visina, col=spol, pch=16,xlim=range(visina)))
-abline(c(0,1))
+abline(c(0,1),col="blue")
 abline(lm(visina~oce, data=data), col=3,lwd=3)
 abline(lm(visina~oce, data=data[data$spol=="M",]), col="red", lwd=3)
-abline(lm(visina~oce, data=data[data$spol=="F",]), col="blue", lwd=3)
+abline(lm(visina~oce, data=data[data$spol=="F",]),  lwd=3)
 @
 \end{frame}
 %% <<<<<<---------------------|
@@ -177,10 +310,10 @@ abline(lm(visina~oce, data=data[data$spol=="F",]), col="blue", lwd=3)
 \frametitle{Dekleta}
 <<sl2,eval=FALSE>>=
 with(data, plot(mati, visina, col=spol, pch=16,xlim=range(visina)))
-abline(c(0,1))
+abline(c(0,1),col="blue")
 abline(lm(visina~mati, data=data), col=3,lwd=3)
 abline(lm(visina~mati, data=data[data$spol=="M",]), col="red", lwd=3)
-abline(lm(visina~mati, data=data[data$spol=="F",]), col="blue", lwd=3)
+abline(lm(visina~mati, data=data[data$spol=="F",]),  lwd=3)
 
 @
 \end{frame}
@@ -200,7 +333,7 @@ abline(lm(visina~mati, data=data[data$spol=="F",]), col="blue", lwd=3)
 \begin{frame}[fragile]
 \frametitle{Fantje in dekleta}
 <<moski2,fig=TRUE,echo=FALSE>>=
-par(mfrow=c(1,2))
+par(mfrow=c(1,2),mar=c(4,3,1,0))
 <<sl1>>
 <<sl2>>
 @@@
