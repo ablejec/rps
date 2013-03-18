@@ -14,7 +14,7 @@
 \newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
 %\usepackage{babel}
 %\input{abpkgB}
-%\input{abpkg} 
+%\input{abpkg}
 \input{abBeam}
 \input{abcmd}
 %\input{abpage}
@@ -86,7 +86,6 @@ Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker pr
 Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn} in na \url{http://bit.ly/16oBVpR}
 \begin{Schunk}
 \begin{Sinput}
-> fpath <- file.path("../data", lfn)
 > fpath <- "http://bit.ly/16oBVpR"
 > data <- read.table(fpath, header = TRUE, sep = "\t")
 > names(data)
@@ -126,7 +125,7 @@ Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{l
                  NA's   :5      
 \end{Soutput}
 \end{Schunk}
-Ali kaj opazite?
+Ali pri podatkih kaj opazite?
 \end{frame}
 %% <<<<<<---------------------|
 %% |--------------------->>>>>>
@@ -324,7 +323,7 @@ Grafični prikazi
 \end{Schunk}
 \includegraphics{./figs/SwPres-014}
 
-Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}. 
+Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}.
 \end{frame}
 %% <<<<<<---------------------|
 
@@ -392,13 +391,13 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 \begin{Sinput}
 > with(data, plot(oce, visina, col = spol, pch = 16, 
 +     xlim = range(visina)))
-> abline(c(0, 1))
+> abline(c(0, 1), col = "blue")
 > abline(lm(visina ~ oce, data = data), col = 3, 
 +     lwd = 3)
 > abline(lm(visina ~ oce, data = data[data$spol == 
 +     "M", ]), col = "red", lwd = 3)
 > abline(lm(visina ~ oce, data = data[data$spol == 
-+     "F", ]), col = "blue", lwd = 3)
++     "F", ]), lwd = 3)
 \end{Sinput}
 \end{Schunk}
 \end{frame}
@@ -418,13 +417,13 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 \begin{Sinput}
 > with(data, plot(mati, visina, col = spol, pch = 16, 
 +     xlim = range(visina)))
-> abline(c(0, 1))
+> abline(c(0, 1), col = "blue")
 > abline(lm(visina ~ mati, data = data), col = 3, 
 +     lwd = 3)
 > abline(lm(visina ~ mati, data = data[data$spol == 
 +     "M", ]), col = "red", lwd = 3)
 > abline(lm(visina ~ mati, data = data[data$spol == 
-+     "F", ]), col = "blue", lwd = 3)
++     "F", ]), lwd = 3)
 \end{Sinput}
 \end{Schunk}
 \end{frame}
@@ -458,16 +457,15 @@ Windows 7 x64 (build 7601) Service Pack 1 \begin{itemize}\raggedright
   \item R version 2.15.1 (2012-06-22), \verb|x86_64-pc-mingw32|
   \item Locale: \verb|LC_COLLATE=Slovenian_Slovenia.1250|, \verb|LC_CTYPE=Slovenian_Slovenia.1250|, \verb|LC_MONETARY=Slovenian_Slovenia.1250|, \verb|LC_NUMERIC=C|, \verb|LC_TIME=Slovenian_Slovenia.1250|
   \item Base packages: base, datasets, graphics,
-    grDevices, stats, utils
-  \item Other packages: patchDVI~1.9
+    grDevices, methods, stats, utils
   \item Loaded via a namespace (and not attached):
     tools~2.15.1
-\end{itemize}Project path:\verb' D:/_Y/R/rps '\\Main file :\verb' ../doc/Opisna.Rnw '
+\end{itemize}Project path:\verb' D:/_Y/R/rps '\\[1] "nonexistent.Rnw"Main file :\verb' ../doc/nonexistent.Rnw '
 \subsection*{View as vignette}
 Project files can be viewed by pasting this code to \R\ console:\\
 \begin{Schunk}
 \begin{Sinput}
-> projectName <-"rps";  mainFile <-"Opisna"
+> projectName <-"rps";  mainFile <-"nonexistent"
 \end{Sinput}
 \end{Schunk}
 \begin{Schunk}
@@ -486,7 +484,7 @@ Project files can be viewed by pasting this code to \R\ console:\\
 %\SVNRevision ~/~ \SVNDate
 \noindent
 \texttt{Git Revision: \gitCommitterUnixDate-\gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
-\texttt{ \gitReferences} \hfill \verb'../doc/Opisna.Rnw'\\
+\texttt{ \gitReferences} \hfill \verb'../doc/nonexistent.Rnw'\\
 
 }
 

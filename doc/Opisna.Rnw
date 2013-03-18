@@ -353,7 +353,10 @@ par(mfrow=c(1,2),mar=c(4,3,1,0))
 cat(win.version(),"\n")
 toLatex(sessionInfo())
 cat("Project path:\\verb'",dirname(getwd()),"'\\\\\n")
-mainFile <- commandArgs(trailingOnly = TRUE)
+
+ mainFile <- commandArgs(trailingOnly = TRUE)
+ mainFile <- "nonexistent.Rnw"
+ print(mainFile)
 #
 mainFilePath <- file.path("../doc", mainFile[1])
 cat("Main file :\\verb'", mainFilePath, "'\n")
