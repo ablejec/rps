@@ -1,0 +1,24 @@
+\documentclass[10pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[cp1250]{inputenc} %% must be here for Sweave encoding check
+\title{Naslov}
+\author{A. Blejec}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+\tableofcontents}}
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Uvod}
+螚
+<<>>=
+1+1
+@
+Poskus
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Session info}
+<<>>=
+sessionInfo()
+@
+\end{document}

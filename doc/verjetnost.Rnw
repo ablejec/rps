@@ -1,0 +1,300 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+%\documentclass[a4paper,12pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[cp1250]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 3 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2009-02-2#$ $}
+\newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
+%\usepackage{babel}
+%\input{abpkgB}
+%\input{abpkg}
+\input{abBeam}
+\input{abcmd}
+%\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\input{mysweaveB}
+\newcommand{\BV}{}
+\newcommand{\EV}{}
+\newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
+\SweaveOpts{eps=false,prefix.string=./figs/Verjetnost,concordance=true}
+%\SweaveOpts{echo=false}
+%\usepackage{lmodern}
+%\input{abfont}
+\SweaveOpts{keep.source=FALSE}
+% ----------------------------------------------------------------
+\title{Iskanje biserov:\\Verjetnostne funkcije}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\begin{document}
+\mode<article> {\maketitle}
+\mode<presentation> {\frame{\titlepage}}
+\tableofcontents
+% ----------------------------------------------------------------
+\begin{abstract}
+ 
+\end{abstract}
+% -------------------------------------------------------------
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+% \setkeys{Gin}{width=0.9\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
+% ----------------------------------------------------------------
+<<Author:,echo=FALSE>>=
+###################################################
+##                                               ##
+## (c) Andrej Blejec (andrej.blejec@nib.si)      ##
+##                                               ##
+###################################################
+@
+<<initialize,echo=false,results=hide>>=
+options(width=60)
+library(Hmisc)
+#library(xlsReadWrite)
+@
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Tabla pred nekaj tedni ...}
+\begin{center}
+  \includegraphics[width=\textwidth]{../clp/Verjetnost1.pdf}
+\end{center}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Tabla pred nekaj tedni ...}
+\begin{center}
+  \includegraphics[width=\textwidth]{../clp/Verjetnost3.pdf}
+\end{center}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Tabla pred nekaj tedni ...}
+\begin{center}
+  \includegraphics[width=\textwidth]{../clp/Verjetnost2.pdf}
+\end{center}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Negativna binomska porazdelitev}
+$$X \sim negBin(n=80,p=0.2)$$
+$$P(X = k) = {k-1 \choose n-1} p^n \cdot(1-p)^{k-n}$$
+
+<<>>=
+n <- 80
+k <- 350
+p <- 0.2
+choose(k-1,n-1)*p^n*(1-p)^(k-n)
+@
+V R je funkcija parametrizirana na število neuspehov.
+<<>>=
+dnbinom(k-n,n,p)
+pnbinom(k-n,n,p)-pnbinom(k-n-1,n,p)
+@
+$$P(X \leq 350)$$
+<<>>=
+pnbinom(k-n,n,p)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Normalna aproksimacija}
+$$X \sim negBin(n=80,p=0.2)$$
+$$E(X)=\frac{n}{p}=\frac{\Sexpr{n}}{\Sexpr{p}}=\Sexpr{n/p}$$
+$$D(X)=\frac{80*0.8}{0.2^2}=1600$$
+$$X \sim N(400,40^2)$$
+$$P(X \leq 350)$$
+<<>>=
+pnorm(350,400,40)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+
+\frametitle{Geometrijska porazdeitev}
+<<>>=
+n <- 80
+@
+$$X_k \sim geom(p=0.2),\  k= 1, 2, \ldots, \Sexpr{n}$$
+Koliko poskusov do prvega uspeha
+$$P(X = k)=(1-p)^{k-1}*p, k=1, 2, \ldots$$
+\vspace{-1cm}
+<<>>=
+set.seed(789)
+X <- rgeom(n,p=0.2)+1
+X[1:5]
+(Y <- sum(X))
+@
+Zakaj $+1$ ? Poglejte v pomoè funkcije \code{rgeom}.
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Potapljaški poskus}
+\vspace{-0.5cm}
+<<fig=TRUE,height=4>>=
+par (mar=c(3,3,2,1), mgp=c(2,.7,0))
+X <- c(0,X)
+plot(cumsum(X),0:n,type="s", ylab="Biserov", xlab="Število potopov")
+points(cumsum(X[-1]),1:n,col="red",pch=16,cex=.5)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Simulacija}
+<<>>=
+n <- 350
+skoljka <- c("prazna","biser")
+izid <- sample(skoljka,n,replace=TRUE)
+table(izid)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Simulacija z neenako verjetnostjo}
+<<>>=
+n <- 350
+skoljka <- c("prazna","biser")
+izid <- sample(skoljka,n,replace=TRUE,prob=c(8,2))
+(t <- table(izid))
+t["biser"]/sum(t)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Drug pristop}
+
+<<>>=
+p0 <- 0.2
+izid <- runif(n)<=p0
+(t <- table(izid))
+t[2]/sum(t)
+@
+Z logiènimi vrednostmi lahko raèunamo:
+<<>>=
+sum(izid)
+sum(izid)/length(izid)
+@
+
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Veliko število potapljaèev N}
+<<>>=
+N <- 100
+n <- 350
+p <- 0.2
+X <- matrix(runif(N*n)<=p,N,n)
+X[1:4,1:10]+0
+@
+<<>>=
+biserov <- apply(X,1,sum)
+head(biserov)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Porazdelitev}
+<<fig=TRUE>>=
+hist(biserov,col="lightblue")
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Število potopov za 80 biserov}
+Z vsoto geometrijskih ali pa z negativno binomsko porazdelitvijo
+<<>>=
+N <- 10000
+n <- 80
+p <- 0.2
+X <- matrix(rgeom(N*n,p=p),N,n)+1
+X[1:4,1:10]
+@
+
+<<>>=
+potopov <- apply(X,1,sum)
+head(potopov)
+@
+
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Porazdelitev števila potopov}
+<<fig=TRUE,height=4>>=
+p <- sum(potopov<=350)/length(potopov)
+hist(potopov,col="lightblue",main=p)
+abline(v=350,col="red")
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%%% |--------------------->>>>>>
+%\begin{frame}[fragile]
+%\frametitle{Simulacija z negativno binomsko porazdelitvijo}
+%<<>>=
+%N <- 10000
+%n <- 80
+%p <- 0.2
+%potopov <- rnbinom(N,n,p)
+%head(potopov)
+%hist(potopov,col="lightblue",main=sum(potopov<=350)/length(potopov))
+%
+%@
+%\end{frame}
+%%% <<<<<<---------------------|
+
+
+
+
+
+% ----------------------------------------------------------------
+\bibliographystyle{amsplain}
+\bibliography{ab-general}
+\end{document}
+% ----------------------------------------------------------------
