@@ -1,0 +1,159 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+\documentclass[a4paper,12pt]{article}
+%\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 39 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2010-05-26 #$ $}
+\newcommand{\SVNId}{$ $Id: Sweave.Rnw 39 2010-05-25 22:22:19Z ABlejec $ $}
+\input{abpkg}
+\input{abcmd}
+\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\input{mysweave}
+\input{./figs/bla-concordance}
+%\SweaveOpts{echo=false}
+\setkeys{Gin}{width=0.8\textwidth}  % set graphicx parameter
+%\SweaveOpts{keep.source=true}
+\usepackage{lmodern}
+\input{abfont}
+
+% ----------------------------------------------------------------
+\begin{document}
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+%%% \setkeys{Gin}{width=0.9\textwidth}
+% ----------------------------------------------------------------
+\title{}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\maketitle
+% ----------------------------------------------------------------
+%\begin{abstract}
+%
+%\end{abstract}
+% ----------------------------------------------------------------
+\tableofcontents
+
+\section{}
+
+\begin{Schunk}
+\begin{Sinput}
+> x <- rnorm(100)
+> h <- hist(x,ylim=c(0,100))
+> par("usr")
+\end{Sinput}
+\begin{Soutput}
+[1]  -2.68   2.18  -4.00 104.00
+\end{Soutput}
+\begin{Sinput}
+> h
+\end{Sinput}
+\begin{Soutput}
+$breaks
+ [1] -2.5 -2.0 -1.5 -1.0 -0.5  0.0  0.5  1.0  1.5  2.0
+
+$counts
+[1]  4  4 14 17 21 12 13 10  5
+
+$intensities
+[1] 0.08 0.08 0.28 0.34 0.42 0.24 0.26 0.20 0.10
+
+$density
+[1] 0.08 0.08 0.28 0.34 0.42 0.24 0.26 0.20 0.10
+
+$mids
+[1] -2.25 -1.75 -1.25 -0.75 -0.25  0.25  0.75  1.25  1.75
+
+$xname
+[1] "x"
+
+$equidist
+[1] TRUE
+
+attr(,"class")
+[1] "histogram"
+\end{Soutput}
+\begin{Sinput}
+> lines(h$mids,20+h$counts*2,col="red")
+> axis(4,at=seq(0,100,25),labels=seq(0,1000,250))
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/bla-003}
+
+
+% ----------------------------------------------------------------
+%\bibliographystyle{chicago}
+%\addcontentsline{toc}{section}{\refname}
+%\bibliography{ab-general}
+%--------------------------------------------------------------
+
+%\clearpage
+%\appendix
+%\phantomsection\addcontentsline{toc}{section}{\appendixname}
+%\section{\R\ funkcije}
+%\input{}
+
+\clearpage
+\section*{SessionInfo}
+{\small
+Windows 7 x64 (build 7601) Service Pack 1 \begin{itemize}\raggedright
+  \item R version 2.15.1 (2012-06-22), \verb|x86_64-pc-mingw32|
+  \item Locale: \verb|LC_COLLATE=Slovenian_Slovenia.1250|, \verb|LC_CTYPE=Slovenian_Slovenia.1250|, \verb|LC_MONETARY=Slovenian_Slovenia.1250|, \verb|LC_NUMERIC=C|, \verb|LC_TIME=Slovenian_Slovenia.1250|
+  \item Base packages: base, datasets, graphics, grDevices,
+    methods, splines, stats, utils
+  \item Other packages: Hmisc~3.10-1, patchDVI~1.9,
+    survival~2.36-14
+  \item Loaded via a namespace (and not attached):
+    cluster~1.14.2, grid~2.15.1, lattice~0.20-6, tools~2.15.1
+\end{itemize}Project path:\verb' D:/_Y/R/rps '\\Main file :\verb' ../doc/slika.Rnw '
+\subsection*{View as vignette}
+Project files can be viewed by pasting this code to \R\ console:\\
+\begin{Schunk}
+\begin{Sinput}
+> projectName <-"rps";  mainFile <-"slika"
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+> commandArgs()
+> library(tkWidgets)
+> openPDF(file.path(dirname(getwd()),"doc",
++ paste(mainFile,"PDF",sep=".")))
+> viewVignette("viewVignette", projectName, #
++ file.path("../doc",paste(mainFile,"Rnw",sep=".")))
+> #
+\end{Sinput}
+\end{Schunk}
+
+\vfill \hrule \vspace{3pt} \footnotesize{
+%Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
+%\SVNRevision ~/~ \SVNDate
+\noindent
+\texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
+\texttt{ \gitReferences} \hfill \verb'../doc/slika.Rnw'\\
+
+}
+
+
+
+\end{document}
+% ----------------------------------------------------------------

@@ -1,0 +1,45 @@
+\documentclass[10pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[cp1250]{inputenc} %% must be here for Sweave encoding check
+\title{Naslov}
+\author{A. Blejec}
+\usepackage{Sweave}
+\begin{document}
+\input{Osnova-concordance}
+\maketitle
+\tableofcontents
+\clearpage
+\section{Uvod}
+蚞
+\begin{Schunk}
+\begin{Sinput}
+> 1+1
+\end{Sinput}
+\begin{Soutput}
+[1] 2
+\end{Soutput}
+\end{Schunk}
+Poskus
+\clearpage
+\section{Session info}
+\begin{Schunk}
+\begin{Sinput}
+> sessionInfo()
+\end{Sinput}
+\begin{Soutput}
+R version 2.15.1 (2012-06-22)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=Slovenian_Slovenia.1250  LC_CTYPE=Slovenian_Slovenia.1250   
+[3] LC_MONETARY=Slovenian_Slovenia.1250 LC_NUMERIC=C                       
+[5] LC_TIME=Slovenian_Slovenia.1250    
+
+attached base packages:
+[1] stats     graphics  datasets  utils     grDevices methods   base     
+
+loaded via a namespace (and not attached):
+[1] tools_2.15.1
+\end{Soutput}
+\end{Schunk}
+\end{document}
