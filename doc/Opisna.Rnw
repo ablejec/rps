@@ -109,7 +109,6 @@ names(data)
 \frametitle{Opisna statistika}
 <<povzetek>>=
 summary(data[,1:6])
-
 @
 Ali pri podatkih kaj opazite?
 \end{frame}
@@ -122,6 +121,24 @@ Kaj storiti s tistim, ki je napisal, da je rojen v mesecu 0?
 Eden pa je star 59 let??
 \end{frame}
 %% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Popravljanje podatkov}
+Odstranimo ta starga
+<<>>=
+data <- data[data$starost<30,]
+@
+Podatke o mesecu 0 spremenimo v \code{NA}
+
+<<>>=
+data[data$mesec==0,"mesec"] <- NA
+table(data$mesec)
+@
+
+\end{frame}
+%% <<<<<<---------------------|
+
 
 
 %% |--------------------->>>>>>
@@ -233,8 +250,8 @@ qqline(visina)
 \mode<presentation> {\vspace{-1cm}}
 <<fig=TRUE,height=5>>=
 boxplot(visina~spol,col=c("pink","lightblue"))
-rug(visina[spol=="F"],side=2)
-rug(visina[spol=="M"],side=4)
+rug(jitter(visina[spol=="F"]),side=2)
+rug(jitter(visina[spol=="M"]),side=4)
 @
 
 Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}.
@@ -255,6 +272,7 @@ t.test(visina[spol=="F"],visina[spol=="M"])
 @
 Oglejte si, kaj vrne funkcija \fct{t.test}. Dorišite točki povprečij.
 \end{frame}
+
 %% <<<<<<---------------------|
 \clearpage
 \section{Teža}
@@ -269,6 +287,16 @@ Izberite si nekaj prejšnjih prikazov in
 
 \end{frame}
 %% <<<<<<---------------------|
+
+<<>>=
+t.test(masa~spol)
+@
+
+<<fig=TRUE,height=5>>=
+boxplot(masa~spol,col=c("pink","lightblue"))
+rug(jitter(masa[spol=="F"]),side=2)
+rug(jitter(masa[spol=="M"]),side=4)
+@
 
 
 \clearpage
@@ -290,7 +318,7 @@ with(data, plot(oce, visina, col=spol, pch=16,xlim=range(visina)))
 abline(c(0,1),col="blue")
 abline(lm(visina~oce, data=data), col=3,lwd=3)
 abline(lm(visina~oce, data=data[data$spol=="M",]), col="red", lwd=3)
-abline(lm(visina~oce, data=data[data$spol=="F",]),  lwd=3)
+abline(lm(visina~oce, data=data[data$spol=="F",]), lwd=3)
 @
 \end{frame}
 %% <<<<<<---------------------|
