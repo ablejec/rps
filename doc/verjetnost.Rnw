@@ -140,7 +140,6 @@ pnorm(350,400,40)
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-
 \frametitle{Geometrijska porazdeitev}
 <<>>=
 n <- 80

@@ -1,6 +1,6 @@
 \documentclass[10pt]{article}
 \usepackage[slovene]{babel}
-\usepackage[cp1250]{inputenc} %% must be here for Sweave encoding check
+\usepackage[cp1250]{inputenc}  %% must be here for Sweave encoding check
 \title{Naslov}
 \author{A. Blejec}
 \begin{document}

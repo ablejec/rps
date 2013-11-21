@@ -26,7 +26,7 @@
 \newcommand{\BV}{}
 \newcommand{\EV}{}
 \newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
-\input{./figs/SwPres-concordance}
+\input{./figs/RPS-concordance}
 %\SweaveOpts{echo=false}
 %\usepackage{lmodern}
 %\input{abfont}
@@ -76,7 +76,7 @@ Zbrali smo nekaj podatkov o študentih, s katerimi si bomo lahko poskusili odgov
 Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker predvidevamo, da nas bo zanimalo še kaj, zberemo podatke o še nekaj spremenljivkah.
 \begin{Schunk}
 \begin{Sinput}
-> lfn <- "Podatki2012.txt"
+  lfn <- "Podatki2012.txt"
 \end{Sinput}
 \end{Schunk}
 
@@ -86,9 +86,9 @@ Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker pr
 Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn} in na \url{http://bit.ly/16oBVpR}
 \begin{Schunk}
 \begin{Sinput}
-> fpath <- "http://bit.ly/16oBVpR"
-> data <- read.table(fpath, header = TRUE, sep = "\t")
-> names(data)
+  fpath <- "http://bit.ly/16oBVpR"
+  data <- read.table(fpath, header = TRUE, sep = "\t")
+  names(data)
 \end{Sinput}
 \begin{Soutput}
  [1] "starost" "mesec"   "spol"    "masa"    "visina" 
@@ -104,7 +104,7 @@ Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{l
 \frametitle{Opisna statistika}
 \begin{Schunk}
 \begin{Sinput}
-> summary(data[, 1:6])
+  summary(data[, 1:6])
 \end{Sinput}
 \begin{Soutput}
     starost          mesec        spol        masa      
@@ -137,27 +137,53 @@ Eden pa je star 59 let??
 \end{frame}
 %% <<<<<<---------------------|
 
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Popravljanje podatkov}
+Odstranimo ta starga
+\begin{Schunk}
+\begin{Sinput}
+  data <- data[data$starost < 30, ]
+\end{Sinput}
+\end{Schunk}
+Podatke o mesecu 0 spremenimo v \code{NA}
+
+\begin{Schunk}
+\begin{Sinput}
+  data[data$mesec == 0, "mesec"] <- NA
+  table(data$mesec)
+\end{Sinput}
+\begin{Soutput}
+ 1  2  3  4  5  6  7  8  9 10 11 
+ 1  3  2  3  4  3  7  5  2  5  6 
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Nadaljevanje opisa}
 \begin{Schunk}
 \begin{Sinput}
-> summary(data[, 7:dim(data)[2]])
+  summary(data[, 7:dim(data)[2]])
 \end{Sinput}
 \begin{Soutput}
      cevelj      lasje  oci         mati      
- Min.   :36.00   S:19   S:24   Min.   :155.0  
- 1st Qu.:38.00   T:24   T:19   1st Qu.:160.0  
+ Min.   :36.00   S:19   S:23   Min.   :157.0  
+ 1st Qu.:38.00   T:23   T:19   1st Qu.:160.0  
  Median :39.00                 Median :165.0  
- Mean   :40.02                 Mean   :165.4  
- 3rd Qu.:41.50                 3rd Qu.:168.0  
+ Mean   :39.93                 Mean   :165.6  
+ 3rd Qu.:41.00                 3rd Qu.:168.0  
  Max.   :48.00                 Max.   :180.0  
                                NA's   :5      
       oce        majica 
- Min.   :170.0   L : 5  
- 1st Qu.:174.2   M :19  
- Median :179.5   S :16  
+ Min.   :170.0   L : 4  
+ 1st Qu.:174.0   M :19  
+ Median :179.0   S :16  
  Mean   :179.1   XL: 1  
  3rd Qu.:182.0   XS: 2  
  Max.   :190.0          
@@ -177,14 +203,14 @@ Primerjajte razpone vrednosti višin študentov in staršev.
 Povzetek višin glede na spol
 \begin{Schunk}
 \begin{Sinput}
-> summary(data$mati)
+  summary(data$mati)
 \end{Sinput}
 \begin{Soutput}
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-  155.0   160.0   165.0   165.4   168.0   180.0       5 
+  157.0   160.0   165.0   165.6   168.0   180.0       5 
 \end{Soutput}
 \begin{Sinput}
-> by(data$visina, data$spol, summary)
+  by(data$visina, data$spol, summary)
 \end{Sinput}
 \begin{Soutput}
 data$spol: F
@@ -193,14 +219,14 @@ data$spol: F
 --------------------------------------------- 
 data$spol: M
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  171.0   178.5   180.0   180.0   182.5   189.0 
+  171.0   180.0   180.0   180.2   183.0   189.0 
 \end{Soutput}
 \begin{Sinput}
-> summary(data$oce)
+  summary(data$oce)
 \end{Sinput}
 \begin{Soutput}
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-  170.0   174.2   179.5   179.1   182.0   190.0       5 
+  170.0   174.0   179.0   179.1   182.0   190.0       5 
 \end{Soutput}
 \end{Schunk}
 \end{frame}
@@ -213,7 +239,7 @@ Ali je v delovnem prostoru (workspace)?\\
 Do spremenljivk lahko pridem posredno na več načinov
 \begin{itemize}
   \item \code{data\$visina}
-  \item \code{data[,\"visina\"]}
+  \item \code{data[, 'visina']}
   \item \code{data[,5]}
 \end{itemize}
 \end{frame}
@@ -224,17 +250,17 @@ Do spremenljivk lahko pridem posredno na več načinov
 Neposreden dostop do spremenljivk omogoči
 \begin{Schunk}
 \begin{Sinput}
-> attach(data)
-> length(visina)
+  attach(data)
+  length(visina)
 \end{Sinput}
 \begin{Soutput}
-[1] 43
+[1] 42
 \end{Soutput}
 \begin{Sinput}
-> visina[1:5]
+  visina[1:5]
 \end{Sinput}
 \begin{Soutput}
-[1] 178 173 178 167 171
+[1] 173 178 167 171 171
 \end{Soutput}
 \end{Schunk}
 \end{frame}
@@ -248,10 +274,10 @@ Grafični prikazi
 \mode<presentation> {\mode<presentation> {\vspace{-1cm}}}
 \begin{Schunk}
 \begin{Sinput}
-> plot(visina)
+  plot(visina)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/SwPres-009}
+\includegraphics{./figs/RPS-011}
 \end{frame}
 %% <<<<<<---------------------|
 %% |--------------------->>>>>>
@@ -260,10 +286,10 @@ Grafični prikazi
 \mode<presentation> {\vspace{-1cm}}
 \begin{Schunk}
 \begin{Sinput}
-> plot(visina, pch = 16, col = spol)
+  plot(visina, pch = 16, col = spol)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/SwPres-010}
+\includegraphics{./figs/RPS-012}
 \end{frame}
 %% <<<<<<---------------------|
 %% |--------------------->>>>>>
@@ -272,11 +298,11 @@ Grafični prikazi
 \mode<presentation> {\vspace{-1cm}}
 \begin{Schunk}
 \begin{Sinput}
-> x <- visina
-> plot(x, rank(x), pch = 16, col = spol)
+  x <- visina
+  plot(x, rank(x), pch = 16, col = spol)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/SwPres-011}
+\includegraphics{./figs/RPS-013}
 \end{frame}
 %% <<<<<<---------------------|
 
@@ -286,15 +312,15 @@ Grafični prikazi
 \mode<presentation> {\vspace{-1cm}}
 \begin{Schunk}
 \begin{Sinput}
-> x <- visina
-> plot(x, rank(x), pch = 16, col = spol)
-> q <- qnorm((rank(x) - 0.5)/length(x), mean(x), 
+  x <- visina
+  plot(x, rank(x), pch = 16, col = spol)
+  q <- qnorm((rank(x) - 0.5)/length(x), mean(x), 
 +     sd(x))
-> points(q, rank(x), col = 4)
-> segments(x, rank(x), q, rank(x))
+  points(q, rank(x), col = 4)
+  segments(x, rank(x), q, rank(x))
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/SwPres-012}
+\includegraphics{./figs/RPS-014}
 \end{frame}
 %% <<<<<<---------------------|
 %% |--------------------->>>>>>
@@ -303,11 +329,11 @@ Grafični prikazi
 \mode<presentation> {\vspace{-1cm}}
 \begin{Schunk}
 \begin{Sinput}
-> qqnorm(visina, col = spol, pch = 16)
-> qqline(visina)
+  qqnorm(visina, col = spol, pch = 16)
+  qqline(visina)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/SwPres-013}
+\includegraphics{./figs/RPS-015}
 \end{frame}
 %% <<<<<<---------------------|
 %% |--------------------->>>>>>
@@ -316,12 +342,12 @@ Grafični prikazi
 \mode<presentation> {\vspace{-1cm}}
 \begin{Schunk}
 \begin{Sinput}
-> boxplot(visina ~ spol, col = c("pink", "lightblue"))
-> rug(visina[spol == "F"], side = 2)
-> rug(visina[spol == "M"], side = 4)
+  boxplot(visina ~ spol, col = c("pink", "lightblue"))
+  rug(jitter(visina[spol == "F"]), side = 2)
+  rug(jitter(visina[spol == "M"]), side = 4)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/SwPres-014}
+\includegraphics{./figs/RPS-016}
 
 Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}.
 \end{frame}
@@ -334,29 +360,30 @@ Dorišite točke za mediane. Pomagajte si s \fct{str}, \fct{locator}.
 \frametitle{Student t-test}
 \begin{Schunk}
 \begin{Sinput}
-> t.test(visina ~ spol)
+  t.test(visina ~ spol)
 \end{Sinput}
 \begin{Soutput}
 	Welch Two Sample t-test
 
 data:  visina by spol 
-t = -6.8838, df = 15.244, p-value = 4.77e-06
+t = -6.4643, df = 12.502, p-value = 2.55e-05
 alternative hypothesis: true difference in means is not equal to 0 
 95 percent confidence interval:
- -17.257671  -9.105965 
+ -17.901862  -8.906219 
 sample estimates:
 mean in group F mean in group M 
-       166.8182        180.0000 
+       166.8182        180.2222 
 \end{Soutput}
 \end{Schunk}
 Lahko tudi tako:
 \begin{Schunk}
 \begin{Sinput}
-> t.test(visina[spol == "F"], visina[spol == "M"])
+  t.test(visina[spol == "F"], visina[spol == "M"])
 \end{Sinput}
 \end{Schunk}
 Oglejte si, kaj vrne funkcija \fct{t.test}. Dorišite točki povprečij.
 \end{frame}
+
 %% <<<<<<---------------------|
 \clearpage
 \section{Teža}
@@ -366,11 +393,39 @@ Oglejte si, kaj vrne funkcija \fct{t.test}. Dorišite točki povprečij.
 Izberite si nekaj prejšnjih prikazov in
 \begin{itemize}
   \item Raziščite kako je s težo pri dekletih in fantih.
-  \item Kaj pa velja za BMI ($BMI=masa/visina^2$)
+  \item Izračunajte novo spremenljivko $BMI=masa/visina^2$
+  \item Kaj pa velja za BMI?
 \end{itemize}
 
 \end{frame}
 %% <<<<<<---------------------|
+
+\begin{Schunk}
+\begin{Sinput}
+  t.test(masa ~ spol)
+\end{Sinput}
+\begin{Soutput}
+	Welch Two Sample t-test
+
+data:  masa by spol 
+t = -7.0271, df = 10.154, p-value = 3.324e-05
+alternative hypothesis: true difference in means is not equal to 0 
+95 percent confidence interval:
+ -25.71686 -13.35385 
+sample estimates:
+mean in group F mean in group M 
+       58.57576        78.11111 
+\end{Soutput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+  boxplot(masa ~ spol, col = c("pink", "lightblue"))
+  rug(jitter(masa[spol == "F"]), side = 2)
+  rug(jitter(masa[spol == "M"]), side = 4)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/RPS-020}
 
 
 \clearpage
@@ -389,14 +444,14 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 \frametitle{Fantje}
 \begin{Schunk}
 \begin{Sinput}
-> with(data, plot(oce, visina, col = spol, pch = 16, 
+  with(data, plot(oce, visina, col = spol, pch = 16, 
 +     xlim = range(visina)))
-> abline(c(0, 1), col = "blue")
-> abline(lm(visina ~ oce, data = data), col = 3, 
+  abline(c(0, 1), col = "blue")
+  abline(lm(visina ~ oce, data = data), col = 3, 
 +     lwd = 3)
-> abline(lm(visina ~ oce, data = data[data$spol == 
+  abline(lm(visina ~ oce, data = data[data$spol == 
 +     "M", ]), col = "red", lwd = 3)
-> abline(lm(visina ~ oce, data = data[data$spol == 
+  abline(lm(visina ~ oce, data = data[data$spol == 
 +     "F", ]), lwd = 3)
 \end{Sinput}
 \end{Schunk}
@@ -405,8 +460,270 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
+\frametitle{Koeficienti}
+\begin{Schunk}
+\begin{Sinput}
+  fit <- lm(visina ~ oce, data = data)
+  summary(fit)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = visina ~ oce, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-14.298  -4.298  -1.343   3.998  16.315 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)  
+(Intercept)  83.4128    39.1670   2.130   0.0403 *
+oce           0.4774     0.2186   2.183   0.0358 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Residual standard error: 7.231 on 35 degrees of freedom
+  (5 observations deleted due to missingness)
+Multiple R-squared: 0.1199,	Adjusted R-squared: 0.09474 
+F-statistic: 4.767 on 1 and 35 DF,  p-value: 0.0358 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Grafična analiza}
+\begin{Schunk}
+\begin{Sinput}
+  par(mfrow = c(2, 2))
+  plot(fit, col = spol)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/RPS-023}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\begin{Schunk}
+\begin{Sinput}
+  fit <- lm(visina ~ spol * oce, data = data)
+  summary(fit)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = visina ~ spol * oce, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-11.3717  -2.6359  -0.2208   3.7604  11.1943 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)   
+(Intercept) 115.8618    34.2922   3.379  0.00188 **
+spolM       -10.4524    72.3167  -0.145  0.88596   
+oce           0.2830     0.1920   1.474  0.14986   
+spolM:oce     0.1264     0.4003   0.316  0.75420   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Residual standard error: 5.475 on 33 degrees of freedom
+  (5 observations deleted due to missingness)
+Multiple R-squared: 0.5244,	Adjusted R-squared: 0.4812 
+F-statistic: 12.13 on 3 and 33 DF,  p-value: 1.645e-05 
+\end{Soutput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+  par(mfrow = c(2, 2))
+  plot(fit, col = spol)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/RPS-025}
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Regresija}
+\begin{Schunk}
+\begin{Sinput}
+  plot(visina, masa)
+  abline(lm(masa ~ visina))
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/RPS-026}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Regresija}
+\begin{Schunk}
+\begin{Sinput}
+  cor(masa, visina)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.7049331
+\end{Soutput}
+\begin{Sinput}
+  fit <- lm(masa ~ visina)
+  summary(fit)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = masa ~ visina)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-15.354  -4.140  -1.786   3.579  24.042 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -92.2700    24.6887  -3.737 0.000581 ***
+visina        0.9136     0.1453   6.286 1.87e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Residual standard error: 7.202 on 40 degrees of freedom
+Multiple R-squared: 0.4969,	Adjusted R-squared: 0.4844 
+F-statistic: 39.51 on 1 and 40 DF,  p-value: 1.874e-07 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Regresija}
+\begin{Schunk}
+\begin{Sinput}
+  fit <- lm(masa ~ visina * spol)
+  summary(fit)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = masa ~ visina * spol)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-8.381 -4.148 -1.588  3.022 11.878 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)  
+(Intercept)  -13.1070    31.2526  -0.419   0.6773  
+visina         0.4297     0.1872   2.295   0.0274 *
+spolM        100.1884    73.0398   1.372   0.1782  
+visina:spolM  -0.4795     0.4113  -1.166   0.2509  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Residual standard error: 5.738 on 38 degrees of freedom
+Multiple R-squared: 0.6966,	Adjusted R-squared: 0.6727 
+F-statistic: 29.09 on 3 and 38 DF,  p-value: 6.079e-10 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+\begin{Schunk}
+\begin{Sinput}
+  plot(visina, masa, col = spol)
+  abline(lm(masa ~ visina))
+  points(visina, predict(fit), pch = 16, col = spol)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/RPS-029}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Analiza variance}
+\begin{Schunk}
+\begin{Sinput}
+  fvis <- cut(visina, breaks = c(155, 165, 175, 
++     200), labels = c("M", "S", "V"))
+  table(fvis)
+\end{Sinput}
+\begin{Soutput}
+fvis
+ M  S  V 
+12 22  8 
+\end{Soutput}
+\begin{Sinput}
+  (m <- by(masa, fvis, mean))
+\end{Sinput}
+\begin{Soutput}
+fvis: M
+[1] 56.16667
+--------------------------------------------- 
+fvis: S
+[1] 62.04545
+--------------------------------------------- 
+fvis: V
+[1] 74.625
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{AOV}
+\begin{Schunk}
+\begin{Sinput}
+  plot(masa, fvis)
+  points(m, 1:3, pch = 16, cex = 2)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{./figs/RPS-031}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{AOV}
+\begin{Schunk}
+\begin{Sinput}
+  fit <- lm(masa ~ 0 + fvis)
+  summary(fit)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = masa ~ 0 + fvis)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-19.625  -4.510  -1.167   2.924  25.954 
+
+Coefficients:
+      Estimate Std. Error t value Pr(>|t|)    
+fvisM   56.167      2.295   24.48   <2e-16 ***
+fvisS   62.045      1.695   36.61   <2e-16 ***
+fvisV   74.625      2.811   26.55   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Residual standard error: 7.949 on 39 degrees of freedom
+Multiple R-squared: 0.9855,	Adjusted R-squared: 0.9843 
+F-statistic: 881.4 on 3 and 39 DF,  p-value: < 2.2e-16 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
 \frametitle{Fantje}
-\includegraphics{./figs/SwPres-moski}
+\includegraphics{./figs/RPS-moski}
 \end{frame}
 %% <<<<<<---------------------|
 \clearpage
@@ -415,14 +732,14 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 \frametitle{Dekleta}
 \begin{Schunk}
 \begin{Sinput}
-> with(data, plot(mati, visina, col = spol, pch = 16, 
+  with(data, plot(mati, visina, col = spol, pch = 16, 
 +     xlim = range(visina)))
-> abline(c(0, 1), col = "blue")
-> abline(lm(visina ~ mati, data = data), col = 3, 
+  abline(c(0, 1), col = "blue")
+  abline(lm(visina ~ mati, data = data), col = 3, 
 +     lwd = 3)
-> abline(lm(visina ~ mati, data = data[data$spol == 
+  abline(lm(visina ~ mati, data = data[data$spol == 
 +     "M", ]), col = "red", lwd = 3)
-> abline(lm(visina ~ mati, data = data[data$spol == 
+  abline(lm(visina ~ mati, data = data[data$spol == 
 +     "F", ]), lwd = 3)
 \end{Sinput}
 \end{Schunk}
@@ -432,7 +749,7 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Dekleta}
-\includegraphics{./figs/SwPres-zenske}
+\includegraphics{./figs/RPS-zenske}
 \end{frame}
 %% <<<<<<---------------------|
 \clearpage
@@ -440,16 +757,13 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Fantje in dekleta}
-\includegraphics{./figs/SwPres-moski2}
+\includegraphics{./figs/RPS-moski2}
 \end{frame}
 %% <<<<<<---------------------|
  \setkeys{Gin}{width=0.7\textwidth}
 
 
 
-% ----------------------------------------------------------------
-%\bibliographystyle{amsplain}
-%\bibliography{ab-general}
 \clearpage
 \section*{SessionInfo}
 {\small
@@ -457,24 +771,25 @@ Windows 7 x64 (build 7601) Service Pack 1 \begin{itemize}\raggedright
   \item R version 2.15.1 (2012-06-22), \verb|x86_64-pc-mingw32|
   \item Locale: \verb|LC_COLLATE=Slovenian_Slovenia.1250|, \verb|LC_CTYPE=Slovenian_Slovenia.1250|, \verb|LC_MONETARY=Slovenian_Slovenia.1250|, \verb|LC_NUMERIC=C|, \verb|LC_TIME=Slovenian_Slovenia.1250|
   \item Base packages: base, datasets, graphics,
-    grDevices, methods, stats, utils
+    grDevices, stats, utils
+  \item Other packages: patchDVI~1.9
   \item Loaded via a namespace (and not attached):
     tools~2.15.1
-\end{itemize}Project path:\verb' D:/_Y/R/rps '\\[1] "nonexistent.Rnw"Main file :\verb' ../doc/nonexistent.Rnw '
+\end{itemize}Project path:\verb' D:/_Y/R/rps '\\Main file :\verb' ../doc/Opisna.Rnw '
 \subsection*{View as vignette}
 Project files can be viewed by pasting this code to \R\ console:\\
 \begin{Schunk}
 \begin{Sinput}
-> projectName <-"rps";  mainFile <-"nonexistent"
+> projectName <-"rps";  mainFile <-"Opisna"
 \end{Sinput}
 \end{Schunk}
 \begin{Schunk}
 \begin{Sinput}
-> commandArgs()
-> library(tkWidgets)
-> openPDF(file.path(dirname(getwd()), "doc", paste(mainFile, 
+  commandArgs()
+  library(tkWidgets)
+  openPDF(file.path(dirname(getwd()), "doc", paste(mainFile, 
 +     "PDF", sep = ".")))
-> viewVignette("viewVignette", projectName, file.path("../doc", 
+  viewVignette("viewVignette", projectName, file.path("../doc", 
 +     paste(mainFile, "Rnw", sep = ".")))
 \end{Sinput}
 \end{Schunk}
@@ -483,10 +798,12 @@ Project files can be viewed by pasting this code to \R\ console:\\
 %Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
 %\SVNRevision ~/~ \SVNDate
 \noindent
-\texttt{Git Revision: \gitCommitterUnixDate-\gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
-\texttt{ \gitReferences} \hfill \verb'../doc/nonexistent.Rnw'\\
+\texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
+\texttt{ \gitReferences} \hfill \verb'../doc/Opisna.Rnw'\\
 
 }
+
+
 
 \end{document}
 % ----------------------------------------------------------------

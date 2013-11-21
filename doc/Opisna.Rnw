@@ -26,7 +26,7 @@
 \newcommand{\BV}{}
 \newcommand{\EV}{}
 \newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
-\SweaveOpts{eps=false,prefix.string=./figs/SwPres,concordance=true}
+\SweaveOpts{eps=false,prefix.string=./figs/RPS,concordance=true}
 %\SweaveOpts{echo=false}
 %\usepackage{lmodern}
 %\input{abfont}
@@ -66,7 +66,7 @@
 ###################################################
 @
 <<initialize,echo=false,results=hide>>=
-options(width=60)
+if(!interactive()) options(width=60,prompt="  ",cont="  ")
 #library(Hmisc)
 #library(xlsReadWrite)
 @
@@ -173,7 +173,7 @@ Ali je v delovnem prostoru (workspace)?\\
 Do spremenljivk lahko pridem posredno na več načinov
 \begin{itemize}
   \item \code{data\$visina}
-  \item \code{data[,\"visina\"]}
+  \item \code{data[, 'visina']}
   \item \code{data[,5]}
 \end{itemize}
 \end{frame}
@@ -282,7 +282,8 @@ Oglejte si, kaj vrne funkcija \fct{t.test}. Dorišite točki povprečij.
 Izberite si nekaj prejšnjih prikazov in
 \begin{itemize}
   \item Raziščite kako je s težo pri dekletih in fantih.
-  \item Kaj pa velja za BMI ($BMI=masa/visina^2$)
+  \item Izračunajte novo spremenljivko $BMI=masa/visina^2$
+  \item Kaj pa velja za BMI?
 \end{itemize}
 
 \end{frame}
@@ -325,6 +326,117 @@ abline(lm(visina~oce, data=data[data$spol=="F",]), lwd=3)
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
+\frametitle{Koeficienti}
+<<>>=
+fit <- lm(visina~oce,data=data)
+summary(fit)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Grafična analiza}
+<<fig=TRUE>>=
+par(mfrow=c(2,2))
+plot(fit,col=spol)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+<<>>=
+fit <- lm(visina~spol*oce,data=data)
+summary(fit)
+
+@
+
+<<fig=TRUE>>=
+par(mfrow=c(2,2))
+plot(fit,col=spol)
+@
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Regresija}
+<<fig=TRUE>>=
+plot(visina,masa)
+abline(lm(masa~visina))
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Regresija}
+<<>>=
+cor(masa,visina)
+fit <- lm(masa~visina)
+summary(fit)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Regresija}
+<<>>=
+fit <- lm(masa~visina*spol)
+summary(fit)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+<<fig=TRUE>>=
+plot(visina,masa,col=spol)
+abline(lm(masa~visina))
+points(visina,predict(fit),pch=16,col=spol)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Analiza variance}
+<<>>=
+fvis <- cut(visina,breaks=c(155,165,175,200), labels=c("M","S","V"))
+table(fvis)
+(m <- by(masa,fvis,mean))
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{AOV}
+<<fig=TRUE>>=
+plot(masa,fvis)
+points(m,1:3,pch=16,cex=2)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{AOV}
+<<>>=
+fit <- lm(masa~0+fvis)
+summary(fit)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
 \frametitle{Fantje}
 <<moski,fig=TRUE,echo=FALSE>>=
 <<sl1>>
@@ -342,7 +454,6 @@ abline(c(0,1),col="blue")
 abline(lm(visina~mati, data=data), col=3,lwd=3)
 abline(lm(visina~mati, data=data[data$spol=="M",]), col="red", lwd=3)
 abline(lm(visina~mati, data=data[data$spol=="F",]),  lwd=3)
-
 @
 \end{frame}
 %% <<<<<<---------------------|
@@ -371,9 +482,6 @@ par(mfrow=c(1,2),mar=c(4,3,1,0))
 
 
 
-% ----------------------------------------------------------------
-%\bibliographystyle{amsplain}
-%\bibliography{ab-general}
 \clearpage
 \section*{SessionInfo}
 {\small
@@ -381,10 +489,7 @@ par(mfrow=c(1,2),mar=c(4,3,1,0))
 cat(win.version(),"\n")
 toLatex(sessionInfo())
 cat("Project path:\\verb'",dirname(getwd()),"'\\\\\n")
-
- mainFile <- commandArgs(trailingOnly = TRUE)
- mainFile <- "nonexistent.Rnw"
- print(mainFile)
+mainFile <- commandArgs(trailingOnly = TRUE)
 #
 mainFilePath <- file.path("../doc", mainFile[1])
 cat("Main file :\\verb'", mainFilePath, "'\n")
@@ -420,10 +525,20 @@ file.path("../doc",paste(mainFile,"Rnw",sep=".")))
 %Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
 %\SVNRevision ~/~ \SVNDate
 \noindent
-\texttt{Git Revision: \gitCommitterUnixDate-\gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
+\texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
 \texttt{ \gitReferences} \hfill \verb'\Sexpr{mainFilePath}'\\
 
 }
+
+<<eval=FALSE,echo=FALSE>>=
+# getrootpath <- function() {
+# fp <- (strsplit(getwd(), "/"))[[1]]
+# file <- file.path(paste(fp[-length(fp)], collapse = "/"))
+# return(file)
+# }
+# fileName <- function(name="bla",ext="PDF") paste(name,ext,sep=".")
+@
+
 
 \end{document}
 % ----------------------------------------------------------------
