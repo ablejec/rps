@@ -14,5 +14,8 @@ Special Slovenian characters: čšžČŠŽ
 \SweaveInput{Encoding2.Rnw}
 
 Main again
+<<>>=
+sessionInfo()
+@
 \end{document}
 % ----------------------------------------------------------------
