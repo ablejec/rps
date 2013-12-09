@@ -147,7 +147,7 @@ ocene(n=10,cenilka=var)
 %\input{}
 
 \clearpage
-\section*{SessionInfo}
+\section*{SessionInfo} 
 {\small
 <<sessionInfo,results=tex,echo=false>>=
 cat(win.version(),"\n")
