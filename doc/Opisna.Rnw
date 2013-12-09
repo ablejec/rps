@@ -125,7 +125,7 @@ Eden pa je star 59 let??
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Popravljanje podatkov}
-Odstranimo ta starga
+Ohranimo  \emph{ta mlade}
 <<>>=
 data <- data[data$starost<30,]
 @
@@ -326,6 +326,51 @@ abline(lm(visina~oce, data=data[data$spol=="F",]), lwd=3)
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
+\frametitle{Fantje}
+<<moski,fig=TRUE,echo=FALSE>>=
+<<sl1>>
+@
+@
+\end{frame}
+%% <<<<<<---------------------|
+\clearpage
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Dekleta}
+<<sl2,eval=FALSE>>=
+with(data, plot(mati, visina, col=spol, pch=16,xlim=range(visina)))
+abline(c(0,1),col="blue")
+abline(lm(visina~mati, data=data), col=3,lwd=3)
+abline(lm(visina~mati, data=data[data$spol=="M",]), col="red", lwd=3)
+abline(lm(visina~mati, data=data[data$spol=="F",]),  lwd=3)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Dekleta}
+<<zenske,fig=TRUE,echo=FALSE>>=
+<<sl2>>
+@@
+\end{frame}
+%% <<<<<<---------------------|
+\clearpage
+\setkeys{Gin}{width=0.9\textwidth}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Fantje in dekleta}
+<<moski2,fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,2),mar=c(4,3,1,0))
+<<sl1>>
+<<sl2>>
+@@@
+\end{frame}
+%% <<<<<<---------------------|
+ \setkeys{Gin}{width=0.7\textwidth}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
 \frametitle{Koeficienti}
 <<>>=
 fit <- lm(visina~oce,data=data)
@@ -413,16 +458,31 @@ table(fvis)
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{AOV}
-<<fig=TRUE>>=
-plot(masa,fvis)
-points(m,1:3,pch=16,cex=2)
+<<figaov,fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,2))
+plot(fvis,masa)
+points(1:3,m,pch=16,cex=2)
+plot(as.numeric(fvis), jitter(masa))
+points(1:3,m,pch=16,cex=2,type="b")
+abline(h=mean(masa))
 @
 \end{frame}
 %% <<<<<<---------------------|
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{AOV}
+\frametitle{AOV - ukazi za sliko}
+<<eval=FALSE>>=
+<<figaov>>
+@
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Linearni model}
 <<>>=
 fit <- lm(masa~0+fvis)
 summary(fit)
@@ -430,55 +490,17 @@ summary(fit)
 \end{frame}
 %% <<<<<<---------------------|
 
-
-
-
-
-
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Fantje}
-<<moski,fig=TRUE,echo=FALSE>>=
-<<sl1>>
-@
-@
-\end{frame}
-%% <<<<<<---------------------|
-\clearpage
-%% |--------------------->>>>>>
-\begin{frame}[fragile]
-\frametitle{Dekleta}
-<<sl2,eval=FALSE>>=
-with(data, plot(mati, visina, col=spol, pch=16,xlim=range(visina)))
-abline(c(0,1),col="blue")
-abline(lm(visina~mati, data=data), col=3,lwd=3)
-abline(lm(visina~mati, data=data[data$spol=="M",]), col="red", lwd=3)
-abline(lm(visina~mati, data=data[data$spol=="F",]),  lwd=3)
+\frametitle{Linearni model - odkloni od povprečja}
+<<>>=
+fit <- lm(I(masa-mean(masa))~0+fvis)
+summary(fit)
 @
 \end{frame}
 %% <<<<<<---------------------|
 
-%% |--------------------->>>>>>
-\begin{frame}[fragile]
-\frametitle{Dekleta}
-<<zenske,fig=TRUE,echo=FALSE>>=
-<<sl2>>
-@@
-\end{frame}
-%% <<<<<<---------------------|
-\clearpage
-\setkeys{Gin}{width=0.9\textwidth}
-%% |--------------------->>>>>>
-\begin{frame}[fragile]
-\frametitle{Fantje in dekleta}
-<<moski2,fig=TRUE,echo=FALSE>>=
-par(mfrow=c(1,2),mar=c(4,3,1,0))
-<<sl1>>
-<<sl2>>
-@@@
-\end{frame}
-%% <<<<<<---------------------|
- \setkeys{Gin}{width=0.7\textwidth}
+
 
 
 

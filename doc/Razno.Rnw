@@ -1,0 +1,424 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+%\documentclass[a4paper,12pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 3 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2009-02-2#$ $}
+\newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
+%\usepackage{babel}
+%\input{abpkgB}
+%\input{abpkg}
+\input{abBeam}
+\input{abcmd}
+%\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\usepackage{animate}
+\input{mysweaveB}
+\newcommand{\BV}{}
+\newcommand{\EV}{}
+\newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
+\SweaveOpts{eps=false,prefix.string=./figs/SwPres,concordance=true}
+%\SweaveOpts{echo=false}
+%\usepackage{lmodern}
+%\input{abfont}
+\SweaveOpts{keep.source=false}
+% ----------------------------------------------------------------
+\title{Drobtinice\footnote{... kot bi temu rekel kolega Batagelj :)}}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\begin{document}
+\mode<article> {\maketitle}
+\mode<presentation> {\frame{\titlepage}}
+\tableofcontents
+% ----------------------------------------------------------------
+\begin{abstract}
+ Razna vprašanja in namigi
+\end{abstract}
+% -------------------------------------------------------------
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+% \setkeys{Gin}{width=0.9\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
+% ----------------------------------------------------------------
+<<Author:,echo=FALSE>>=
+###################################################
+##                                               ##
+## (c) Andrej Blejec (andrej.blejec@nib.si)      ##
+##                                               ##
+###################################################
+@
+<<initialize,echo=false,results=hide>>=
+options(width=65)
+library(Hmisc)
+#library(xlsReadWrite)
+if(!interactive()) options(prompt=" ",continue=" ")
+@
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Nekaj tem s konca prejšnjih predavanj}
+\begin{itemize}
+   \item I/O
+   \item kontrolne strukture
+   \item paketi !admin
+   \item ML
+   \item linearni model
+ \end{itemize}
+\end{frame}
+%% <<<<<<---------------------|
+\section{I/O}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{I/O }
+\begin{itemize}
+  \item R je glede branja in pisanja precej fleksibilen.
+  \item Najbolj zanesljive so navadne text datoteke ... \emph{itak}
+  \item Več o tem je na \url{http://ablejec.nib.si/R/HowTo-IOS.pdf}
+\end{itemize}
+
+\end{frame}
+%% <<<<<<---------------------|
+\section{kontrolne strukture}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kontrolne strukture}
+Kontrolne strukture omogočajo odločitve (\code{if})\\%
+in ponavljanje izvedbe ukazov (\code{for, while, repeat})
+<<>>=
+if(interactive()) help("if")
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{if}}
+\code{if(cond) expr}\\
+\code{if(cond) cons.expr  else  alt.expr}
+<<>>=
+x  <-  3
+meja <- 5
+if (x < meja) cat(x, "je manj od", meja,"\n")
+if (x  < meja) cat(x, "je manj od", meja,"\n")  else
+cat( "Večje\n" )
+@
+Spremenite mejo v \code{7} in poskusite znova.
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Več kot en ukaz: \verb"{ }"}
+Več ukazov, ki sodijo skupaj zapremo z \verb"{ }" v blok
+
+<<>>=
+x <- 3
+meja <- 5
+if (x  < meja) {
+lbl <- "Vsota: "
+y <- x+meja
+} else
+{ lbl <- "Produkt: "
+y <- x*meja}
+cat(lbl,y,"\n")
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{ifelse}}
+\code{ifelse(test, yes, no)}
+<<>>=
+x <- c(2:-2)
+ifelse(x >= 0, x, NA)
+sqrt(ifelse(x >= 0, x, NA))  # no warning
+@
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{switch}}
+<<>>=
+centre <- function(x, type) {
+  switch(type,
+         mean = mean(x),
+         median = median(x),
+         trimmed = mean(x, trim = .1))
+}
+x <- rcauchy(10)
+centre(x, "mean")
+centre(x, "median")
+centre(x, "trimmed")
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Zanka \code{for}}
+Uporabljamo, kadar je znano število ponavljanj\\ ali pa seznam vrednosti, za katere se stvar ponovi.\\
+V \R ponavadi lahko nadomestimo z vektorskim načinom\\ ali pa s katero od \code{apply} funkcij. Glej paket \pkg{plyr}.
+<<>>=
+for (x in 10:13){
+y <- x^2
+print(y)
+}
+for(lbl in c("a","e","i","o")) cat(paste("šal",lbl,", ",sep=""))
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Animacija\\Kam gre  porazdelitev $t$, ko naraščajo stopinje prostosti?}
+<<eval=FALSE>>=
+n <- seq(1,30,.01)
+x <- seq(-5,5,length=100)
+for (df in n) {
+plot(x,dt(x,df),type="l",lwd=7,col=4,main=df,ylim=c(0,0.4))
+lines(x,dnorm(x),type="l",lwd=3,col=2)
+ }
+df
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Animacija\\Kam gre  porazdelitev $t$, ko naraščajo stopinje prostosti?}
+<<eval=FALSE>>=
+a <- 0.10
+#
+p <- 1-a/2
+n <- c(seq(1,5,.001),seq(5,30,0.05))
+x <- seq(-5,5,length=100)
+for (df in n) {
+plot(x,dt(x,df),type="l",lwd=7,col=4,main=df,ylim=c(0,0.4))
+lines(x,dnorm(x),type="l",lwd=3,col=2)
+q <- qt(p,df)
+abline(v=c(-q,q),col=4)
+z <- qnorm(p)
+abline(v=c(-z,z),col=2)
+ }
+df
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Zanka se vrti do izpolnitve pogoja}
+\code{while(cond) expr}\\
+Število poskusov do prvega uspeha, če je $p=0.2$
+<<>>=
+set.seed(123)
+(x <- as.numeric(runif(20)<0.2))
+i <- 1
+while(x[i]!=1){
+i <- i+1}
+i
+@
+
+Bolj \R-jevsko:\vspace{-0.5cm}
+<<>>=
+which(x==1)
+which(x==1)[1]
+cumsum(x)
+which(cumsum(x)==3)[1]
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{repeat}}
+<<>>=
+x
+i <- 1
+repeat{
+if( x[i] == 1) break
+i <- i+1
+}
+i
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Stopnja značilnosti}
+<<>>=
+stars <- function(p){
+alfa <- c(0.05,0.01,0.001,0)
+st <- ""
+i <- 1
+while(p <= alfa[i]){
+st <- paste(st,"*",sep="")
+i <- i+1
+}
+if(st=="") st <- "NS"
+return(st)}
+@
+
+<<>>=
+p <- 0.002
+cat("p =",p,stars(p),"\n")
+sapply(c(0.5,0.05,0.005,0.0005),stars)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{paketi !admin}
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{paketi !admin}
+\fct{.libPaths}
+<<>>=
+.libPaths()
+@
+
+Npr:
+
+\code{.libPaths("H:/R/library")}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{ML}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{ML - metoda največjega verjetja}
+\url{http://ablejec.nib.si/pub/rps/MetodeS.pdf}
+\end{frame}
+%% <<<<<<---------------------|
+
+<<echo=FALSE>>=
+mleMean <- function(n=20,As=NULL, mu=3,sd=1){
+par(mar=c(4,4,1,1),oma=c(0,0,0,0),mfrow=c(2,1))
+x <- mu+scale(rnorm(n))*sd
+maxl <- log(prod(dnorm(x,mu,sd)))
+minl <- log(prod(dnorm(x,mu-3*sd,sd)))
+maxl <- maxl+0.1*(maxl-minl)
+maxd <- max(dnorm(x,mu,sd))
+xlim <- c(mu-3*sd,mu+3*sd)
+#
+if(!is.null(As)) As <- sort(As)
+A <- NULL
+L <- NULL
+plot(x,dnorm(x,mu,sd),type="n",xlim=xlim,
+ylim=c(0,maxd),ylab="Density")
+axis(3,at=x,lab=NULL,lwd=3,tick=0.05,col="blue")
+#
+plot(x,dnorm(x,mu,sd),type="n",xlim=c(0,6),
+ylim=c(minl,maxl),ylab="log Likelihood")
+i <- 1
+if(is.null(As)) a <- locator(1)$x else a <- As[i]
+#
+while(!is.null(a)){
+
+plot(x,dnorm(x,mu,sd),type="n",xlim=xlim,
+ylim=c(0,maxd),ylab="Density")
+axis(3,at=x,lab=NULL,lwd=3,tick=0.05,col="blue")
+#
+segments(x,0,x,dnorm(x,mean=a,sd=sd),lwd=3)
+points(a,par("usr")[4],pch=16,cex=2,col="red")
+plot(x,dnorm(x,mu,sd),type="n",xlim=xlim,
+ylim=c(minl,maxl),ylab="log Likelihood")
+A <- c(A,a)
+L <- c(L,log(prod(dnorm(x,a,sd))))
+points(A,L,cex=1.5,lwd=3)
+points(a,rev(L)[1],pch=21,bg="red",cex=1.5)
+i <- i+1
+if(is.null(As)) a <- locator(1)$x else {
+if (i<length(As))
+ a <- As[i] else a <- NULL
+ }
+}
+id <- which(L==max(L))[1]
+a <- A[id]
+A <- c(A,a)
+L <- c(L,log(prod(dnorm(x,a,sd))))
+## replot
+plot(x,dnorm(x,mu,sd),type="n",xlim=xlim,
+ylim=c(0,maxd),ylab="Density")
+axis(3,at=x,lab=NULL,lwd=3,tick=0.05,col="blue")
+#
+segments(x,0,x,dnorm(x,mean=a,sd=sd),lwd=3)
+points(a,par("usr")[4],pch=16,cex=2,col="red")
+plot(x,dnorm(x,mu,sd),type="n",xlim=xlim,
+ylim=c(minl,maxl),ylab="log Likelihood")
+points(A,L,cex=1.5,lwd=3)
+points(a,rev(L)[1],pch=21,bg="red",cex=1.5)
+##
+
+points(mu,par("usr")[3],col="green",xpd=TRUE,cex=2,pch=16)
+abline(v=A[id],col="blue",lwd=2)
+
+invisible(list(x=x,A=A,L=L))
+}
+@
+
+<<echo=FALSE>>=
+source("../../animatoR/doc/animatoR-functions.r")
+@
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Metoda največjega verjetja (ML)}
+\begin{center}
+<<mleMean,fig=TRUE,include=FALSE,echo=FALSE,results=tex>>=
+set.seed(1222)
+mleMean(mu=10,sd=3,As=seq(0,20,length=101))
+
+includeLatex(scale=.45,poster="first")
+@
+%
+\end{center}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Mediana, aritmetična  in geometrijska sredina}
+\url{http://bit.ly/XA8qdX}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\section{linearni model}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{linearni model}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+
+% ----------------------------------------------------------------
+\bibliographystyle{amsplain}
+\bibliography{ab-general}
+\end{document}
+% ----------------------------------------------------------------

@@ -1,0 +1,20 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\begin{document}
+
+Main file.
+
+Special Slovenian characters 蚞Ȋ�
+
+<<>>=
+1+1
+@
+
+\SweaveInput{Include}
+
+<<>>=
+sessionInfo()
+@
+\end{document}
+% ----------------------------------------------------------------

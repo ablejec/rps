@@ -1,0 +1,59 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\usepackage{Sweave}
+\begin{document}
+
+Main file.
+
+NA
+
+\begin{Schunk}
+\begin{Sinput}
+> 1+1
+\end{Sinput}
+\begin{Soutput}
+[1] 2
+\end{Soutput}
+\end{Schunk}
+
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+
+From included file
+
+NA
+
+\begin{Schunk}
+\begin{Sinput}
+> 2+2
+\end{Sinput}
+\begin{Soutput}
+[1] 4
+\end{Soutput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+> sessionInfo()
+\end{Sinput}
+\begin{Soutput}
+R version 3.0.2 (2013-09-25)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=Slovenian_Slovenia.1250 
+[2] LC_CTYPE=Slovenian_Slovenia.1250   
+[3] LC_MONETARY=Slovenian_Slovenia.1250
+[4] LC_NUMERIC=C                       
+[5] LC_TIME=Slovenian_Slovenia.1250    
+
+attached base packages:
+[1] stats     graphics  datasets  utils     grDevices methods  
+[7] base     
+
+loaded via a namespace (and not attached):
+[1] tools_3.0.2
+\end{Soutput}
+\end{Schunk}
+\end{document}
+% ----------------------------------------------------------------

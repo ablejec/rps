@@ -140,7 +140,7 @@ Eden pa je star 59 let??
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{Popravljanje podatkov}
-Odstranimo ta starga
+Ohranimo  \emph{ta mlade}
 \begin{Schunk}
 \begin{Sinput}
   data <- data[data$starost < 30, ]
@@ -460,6 +460,48 @@ Uvedel je pojem regresija, ki izvira iz ugotovitve, da so velikost staršev in p
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
+\frametitle{Fantje}
+\includegraphics{./figs/RPS-moski}
+\end{frame}
+%% <<<<<<---------------------|
+\clearpage
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Dekleta}
+\begin{Schunk}
+\begin{Sinput}
+  with(data, plot(mati, visina, col = spol, pch = 16, 
++     xlim = range(visina)))
+  abline(c(0, 1), col = "blue")
+  abline(lm(visina ~ mati, data = data), col = 3, 
++     lwd = 3)
+  abline(lm(visina ~ mati, data = data[data$spol == 
++     "M", ]), col = "red", lwd = 3)
+  abline(lm(visina ~ mati, data = data[data$spol == 
++     "F", ]), lwd = 3)
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Dekleta}
+\includegraphics{./figs/RPS-zenske}
+\end{frame}
+%% <<<<<<---------------------|
+\clearpage
+\setkeys{Gin}{width=0.9\textwidth}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Fantje in dekleta}
+\includegraphics{./figs/RPS-moski2}
+\end{frame}
+%% <<<<<<---------------------|
+ \setkeys{Gin}{width=0.7\textwidth}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
 \frametitle{Koeficienti}
 \begin{Schunk}
 \begin{Sinput}
@@ -499,7 +541,7 @@ F-statistic: 4.767 on 1 and 35 DF,  p-value: 0.0358
   plot(fit, col = spol)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/RPS-023}
+\includegraphics{./figs/RPS-027}
 \end{frame}
 %% <<<<<<---------------------|
 
@@ -539,7 +581,7 @@ F-statistic: 12.13 on 3 and 33 DF,  p-value: 1.645e-05
   plot(fit, col = spol)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/RPS-025}
+\includegraphics{./figs/RPS-029}
 
 
 %% |--------------------->>>>>>
@@ -551,7 +593,7 @@ F-statistic: 12.13 on 3 and 33 DF,  p-value: 1.645e-05
   abline(lm(masa ~ visina))
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/RPS-026}
+\includegraphics{./figs/RPS-030}
 \end{frame}
 %% <<<<<<---------------------|
 
@@ -635,7 +677,7 @@ F-statistic: 29.09 on 3 and 38 DF,  p-value: 6.079e-10
   points(visina, predict(fit), pch = 16, col = spol)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{./figs/RPS-029}
+\includegraphics{./figs/RPS-033}
 \end{frame}
 %% <<<<<<---------------------|
 
@@ -673,19 +715,30 @@ fvis: V
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{AOV}
-\begin{Schunk}
-\begin{Sinput}
-  plot(masa, fvis)
-  points(m, 1:3, pch = 16, cex = 2)
-\end{Sinput}
-\end{Schunk}
-\includegraphics{./figs/RPS-031}
+\includegraphics{./figs/RPS-figaov}
 \end{frame}
 %% <<<<<<---------------------|
 
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{AOV}
+\frametitle{AOV - ukazi za sliko}
+\begin{Schunk}
+\begin{Sinput}
+  par(mfrow = c(1, 2))
+  plot(fvis, masa)
+  points(1:3, m, pch = 16, cex = 2)
+  plot(as.numeric(fvis), jitter(masa))
+  points(1:3, m, pch = 16, cex = 2, type = "b")
+  abline(h = mean(masa))
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Linearni model}
 \begin{Schunk}
 \begin{Sinput}
   fit <- lm(masa ~ 0 + fvis)
@@ -715,52 +768,39 @@ F-statistic: 881.4 on 3 and 39 DF,  p-value: < 2.2e-16
 \end{frame}
 %% <<<<<<---------------------|
 
-
-
-
-
-
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
-\frametitle{Fantje}
-\includegraphics{./figs/RPS-moski}
-\end{frame}
-%% <<<<<<---------------------|
-\clearpage
-%% |--------------------->>>>>>
-\begin{frame}[fragile]
-\frametitle{Dekleta}
+\frametitle{Linearni model - odkloni od povprečja}
 \begin{Schunk}
 \begin{Sinput}
-  with(data, plot(mati, visina, col = spol, pch = 16, 
-+     xlim = range(visina)))
-  abline(c(0, 1), col = "blue")
-  abline(lm(visina ~ mati, data = data), col = 3, 
-+     lwd = 3)
-  abline(lm(visina ~ mati, data = data[data$spol == 
-+     "M", ]), col = "red", lwd = 3)
-  abline(lm(visina ~ mati, data = data[data$spol == 
-+     "F", ]), lwd = 3)
+  fit <- lm(I(masa - mean(masa)) ~ 0 + fvis)
+  summary(fit)
 \end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = I(masa - mean(masa)) ~ 0 + fvis)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-19.625  -4.510  -1.167   2.924  25.954 
+
+Coefficients:
+      Estimate Std. Error t value Pr(>|t|)    
+fvisM  -6.5952     2.2948  -2.874 0.006529 ** 
+fvisS  -0.7165     1.6948  -0.423 0.674812    
+fvisV  11.8631     2.8105   4.221 0.000141 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Residual standard error: 7.949 on 39 degrees of freedom
+Multiple R-squared: 0.4023,	Adjusted R-squared: 0.3564 
+F-statistic: 8.752 on 3 and 39 DF,  p-value: 0.0001458 
+\end{Soutput}
 \end{Schunk}
 \end{frame}
 %% <<<<<<---------------------|
 
-%% |--------------------->>>>>>
-\begin{frame}[fragile]
-\frametitle{Dekleta}
-\includegraphics{./figs/RPS-zenske}
-\end{frame}
-%% <<<<<<---------------------|
-\clearpage
-\setkeys{Gin}{width=0.9\textwidth}
-%% |--------------------->>>>>>
-\begin{frame}[fragile]
-\frametitle{Fantje in dekleta}
-\includegraphics{./figs/RPS-moski2}
-\end{frame}
-%% <<<<<<---------------------|
- \setkeys{Gin}{width=0.7\textwidth}
+
 
 
 

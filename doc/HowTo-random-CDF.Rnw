@@ -1,0 +1,253 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+\documentclass[a4paper,12pt]{article}
+%\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 39 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2010-05-26 #$ $}
+\newcommand{\SVNId}{$ $Id: Sweave.Rnw 39 2010-05-25 22:22:19Z ABlejec $ $}
+\input{abpkg}
+\input{abcmd}
+\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\input{mysweave}
+\SweaveOpts{eps=false,prefix.string=./figs/bla,concordance=true}
+%\SweaveOpts{echo=false}
+\setkeys{Gin}{width=0.8\textwidth}  % set graphicx parameter
+%\SweaveOpts{keep.source=true}
+\usepackage{lmodern}
+\input{abfont}
+
+% ----------------------------------------------------------------
+\begin{document}
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+%%% \setkeys{Gin}{width=0.9\textwidth}
+% ----------------------------------------------------------------
+\title{Random numbers from inverse CDF}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\maketitle
+% ----------------------------------------------------------------
+%\begin{abstract}
+%
+%\end{abstract}
+% ----------------------------------------------------------------
+\tableofcontents
+<<Author,echo=FALSE>>=
+###############################################
+##                                           ##
+## (c) Andrej Blejec (andrej.blejec@nib.si)  ##
+##                                           ##
+###############################################
+@
+<<initialize,echo=false,results=hide>>=
+options(width=70)
+#library(Hmisc)
+#library(xlsReadWrite)
+@
+
+\section{Inverse empirical CDF}
+
+<<fig=TRUE>>=
+x <- rnorm(100)
+hist(x,prob=TRUE)
+d <- density(x,from=min(x),to=max(x))
+lines(d)
+
+@
+
+<<fig=TRUE>>=
+F <- cumsum(d$y)
+P <- F/max(F)
+plot(d$x,P,type="l")
+
+@
+
+<<fig=TRUE>>=
+n <- 100
+u <- runif(n)
+plot(d$x,P,type="l")
+abline(h=u)
+xout <- approx(P,d$x,u)
+points(xout$y,xout$x)
+abline(v=xout$y)
+smpl <- xout$y
+@
+
+<<fig=TRUE>>=
+hist(smpl)
+@
+
+<<rcdf>>=
+rcdf <- function(n=1,x=rnorm(100),from=min(x),to=max(x),density=TRUE){
+# n number of generated numbers or a vector of quantile ranks
+N <- length(x)
+if(density) {
+d <- density(x,from=from,to=to)
+F <- cumsum(d$y)
+P <- F/max(F)
+P[1] <- 0
+x <- d$x
+}
+else
+{
+# kvantilni rangi posameznih vrednosti s popravkom za zveznost:
+# [0.5, N-0.5]/N
+P <- (rank(x)-0.5)/N
+}
+#
+if(length(n)==1) {
+u <- runif(n, min(P),max(P) )
+} else {
+u <- n
+}
+#
+xout <- approx(P,x,u)$y
+return(xout)
+}
+@
+
+Funkcija za kvantilni rang
+<<>>=
+P <- function(x) (rank(x)-0.5)/length(x)
+@
+
+<<>>=
+set.seed(1234)
+@
+
+Primerjava generiranih števil z zvezno gostoto (\code{density=TRUE}) in s kumulativnim poligonom v točkh (\code{density=FALSE})
+
+<<fig=TRUE>>=
+par(mfrow=c(2,2),mar=c(4,4,0.5,0.5))
+seed <- 670 #round(runif(1,1,1000))
+n <-1000
+x <- rnorm(50)
+set.seed(seed)
+rdens <- rcdf(n,x,density=TRUE)
+set.seed(seed)
+rpoly <- rcdf(n,x,density=FALSE)
+plot(rdens,rpoly)
+abline(c(0,1))
+qqplot(x,rdens)
+abline(c(0,1))
+qqplot(x,rpoly)
+abline(c(0,1))
+x <- sort(x)
+rdens <- sort(rdens)
+rpoly <- sort(rpoly)
+plot(x,P(x),type="l",lwd=5)
+lines(rdens,P(rdens),type="l",col="red",lwd=4)
+#lines(x,P(x),type="p",lwd=5)
+lines(rpoly,P(rpoly),type="l",col="green",lwd=2)
+legend("topleft",legend=c("x","density","polygon"),col=c("black","red","green"),
+lwd=4,bty="n")
+@
+
+<<fig=TRUE>>=
+par(mfrow=c(1,2))
+xdens <- rcdf(P(x),x,density=TRUE)
+plot(x,xdens)
+xpoly <- rcdf(P(x),x,density=FALSE)
+plot(x,xpoly)
+
+@
+
+Uporaba empirične porazdelitvene funkcije (empirična kumulativna funkcija) rekonstruira vhodne podatke, uporaba gladke gostote pa ne.
+<<fig=TRUE>>=
+n <- 10000
+x <- rchisq(1000,1)
+smpl <- rcdf(n,x)
+qqplot(x,smpl)
+@
+
+<<fig=TRUE>>=
+n <- 10000
+x <- rnorm(1000)
+smpl <- rcdf(n,x)
+qqplot(x,smpl)
+@
+
+
+% ----------------------------------------------------------------
+%\bibliographystyle{chicago}
+%\addcontentsline{toc}{section}{\refname}
+%\bibliography{ab-general}
+%--------------------------------------------------------------
+
+%\clearpage
+%\appendix
+%\phantomsection\addcontentsline{toc}{section}{\appendixname}
+%\section{\R\ funkcije}
+%\input{}
+
+\clearpage
+\section*{SessionInfo}
+{\small
+<<sessionInfo,results=tex,echo=false>>=
+cat(win.version(),"\n")
+toLatex(sessionInfo())
+cat("Project path:\\verb'",dirname(getwd()),"'\n")
+@
+}
+
+\subsection*{View as vignette}
+Project files can be viewed by pasting this code to \R\ console:\\
+\begin{Schunk}
+\begin{Sinput}
+<<projectFiles,echo=false,results=tex>>=
+mainFile <- commandArgs(trailingOnly = TRUE)
+mainFile <- strsplit(mainFile,'.',fixed=TRUE)[[1]][1]
+projectName <- rev((strsplit(dirname(getwd()), "/"))[[1]])[1]
+cat('> projectName <-"',projectName,'"; ',sep="")
+cat(' mainFile <-"',mainFile,'"',sep="")
+@
+
+\end{Sinput}
+\end{Schunk}
+<<vignette,eval=false>>=
+commandArgs()
+library(tkWidgets)
+openPDF(file.path(dirname(getwd()),"doc",
+paste(mainFile,"PDF",sep=".")))
+viewVignette("viewVignette", projectName, #
+file.path("../doc",paste(mainFile,"RNW",sep=".")))
+@
+
+\vfill \hrule \vspace{2pt} \footnotesize{
+Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
+%\SVNRevision ~/~ \SVNDate
+}
+
+<<eval=FALSE,echo=FALSE>>=
+# getrootpath <- function() {
+# fp <- (strsplit(getwd(), "/"))[[1]]
+# file <- file.path(paste(fp[-length(fp)], collapse = "/"))
+# return(file)
+# }
+# fileName <- function(name="bla",ext="PDF") paste(name,ext,sep=".")
+@
+
+
+
+\end{document}
+% ----------------------------------------------------------------

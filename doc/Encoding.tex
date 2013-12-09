@@ -1,0 +1,42 @@
+\documentclass[a4paper,12pt]{article}
+%\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\usepackage{Sweave}
+\begin{document}
+\section{Main file}
+Main file
+
+Special Slovenian characters: čšžČŠŽ
+
+\begin{Schunk}
+\begin{Sinput}
+> 1+1
+\end{Sinput}
+\begin{Soutput}
+[1] 2
+\end{Soutput}
+\end{Schunk}
+
+\hrule
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+
+\section{Included file}
+Included file
+
+Special Slovenian characters: čšžČŠŽ
+
+\begin{Schunk}
+\begin{Sinput}
+> 2+2
+\end{Sinput}
+\begin{Soutput}
+[1] 4
+\end{Soutput}
+\end{Schunk}
+
+\hrule
+% ----------------------------------------------------------------
+
+Main again
+\end{document}
+% ----------------------------------------------------------------

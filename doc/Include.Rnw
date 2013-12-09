@@ -1,0 +1,9 @@
+%\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+
+From included file
+
+Special Slovenian characters 蚞Ȋ�
+
+<<>>=
+2+2
+@

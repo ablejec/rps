@@ -1,0 +1,422 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+%\documentclass[a4paper,12pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 3 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2009-02-2#$ $}
+\newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
+%\usepackage{babel}
+%\input{abpkgB}
+%\input{abpkg}
+\input{abBeam}
+\input{abcmd}
+%\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\usepackage{animate}
+\input{mysweaveB}
+\newcommand{\BV}{}
+\newcommand{\EV}{}
+\newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
+\input{./figs/SwPres-concordance}
+%\SweaveOpts{echo=false}
+%\usepackage{lmodern}
+%\input{abfont}
+
+% ----------------------------------------------------------------
+\title{Drobtinice\footnote{... kot bi temu rekel kolega Batagelj :)}}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\begin{document}
+\mode<article> {\maketitle}
+\mode<presentation> {\frame{\titlepage}}
+\tableofcontents
+% ----------------------------------------------------------------
+\begin{abstract}
+ Razna vprašanja in namigi
+\end{abstract}
+% -------------------------------------------------------------
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+% \setkeys{Gin}{width=0.9\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
+% ----------------------------------------------------------------
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Nekaj tem s konca prejšnjih predavanj}
+\begin{itemize}
+   \item I/O
+   \item kontrolne strukture
+   \item paketi !admin
+   \item ML
+   \item linearni model
+ \end{itemize}
+\end{frame}
+%% <<<<<<---------------------|
+\section{I/O}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{I/O }
+\begin{itemize}
+  \item R je glede branja in pisanja precej fleksibilen.
+  \item Najbolj zanesljive so navadne text datoteke ... \emph{itak}
+  \item Več o tem je na \url{http://ablejec.nib.si/R/HowTo-IOS.pdf}
+\end{itemize}
+
+\end{frame}
+%% <<<<<<---------------------|
+\section{kontrolne strukture}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kontrolne strukture}
+Kontrolne strukture omogočajo odločitve (\code{if})\\%
+in ponavljanje izvedbe ukazov (\code{for, while, repeat})
+\begin{Schunk}
+\begin{Sinput}
+ if (interactive()) help("if")
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{if}}
+\code{if(cond) expr}\\
+\code{if(cond) cons.expr  else  alt.expr}
+\begin{Schunk}
+\begin{Sinput}
+ x <- 3
+ meja <- 5
+ if (x < meja) cat(x, "je manj od", meja, "\n")
+\end{Sinput}
+\begin{Soutput}
+3 je manj od 5 
+\end{Soutput}
+\begin{Sinput}
+ if (x < meja) cat(x, "je manj od", meja, "\n") else cat("Večje\n")
+\end{Sinput}
+\begin{Soutput}
+3 je manj od 5 
+\end{Soutput}
+\end{Schunk}
+Spremenite mejo v \code{7} in poskusite znova.
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Več kot en ukaz: \verb"{ }"}
+Več ukazov, ki sodijo skupaj zapremo z \verb"{ }" v blok
+
+\begin{Schunk}
+\begin{Sinput}
+ x <- 3
+ meja <- 5
+ if (x < meja) {
+     lbl <- "Vsota: "
+     y <- x + meja
+ } else {
+     lbl <- "Produkt: "
+     y <- x * meja
+ }
+ cat(lbl, y, "\n")
+\end{Sinput}
+\begin{Soutput}
+Vsota:  8 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{ifelse}}
+\code{ifelse(test, yes, no)}
+\begin{Schunk}
+\begin{Sinput}
+ x <- c(2:-2)
+ ifelse(x >= 0, x, NA)
+\end{Sinput}
+\begin{Soutput}
+[1]  2  1  0 NA NA
+\end{Soutput}
+\begin{Sinput}
+ sqrt(ifelse(x >= 0, x, NA))
+\end{Sinput}
+\begin{Soutput}
+[1] 1.414214 1.000000 0.000000       NA       NA
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{switch}}
+\begin{Schunk}
+\begin{Sinput}
+ centre <- function(x, type) {
+     switch(type, mean = mean(x), median = median(x), 
+         trimmed = mean(x, trim = 0.1))
+ }
+ x <- rcauchy(10)
+ centre(x, "mean")
+\end{Sinput}
+\begin{Soutput}
+[1] -1.532892
+\end{Soutput}
+\begin{Sinput}
+ centre(x, "median")
+\end{Sinput}
+\begin{Soutput}
+[1] -1.13698
+\end{Soutput}
+\begin{Sinput}
+ centre(x, "trimmed")
+\end{Sinput}
+\begin{Soutput}
+[1] -1.29566
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Zanka \code{for}}
+Uporabljamo, kadar je znano število ponavljanj\\ ali pa seznam vrednosti, za katere se stvar ponovi.\\
+V \R ponavadi lahko nadomestimo z vektorskim načinom\\ ali pa s katero od \code{apply} funkcij. Glej paket \pkg{plyr}.
+\begin{Schunk}
+\begin{Sinput}
+ for (x in 10:13) {
+     y <- x^2
+     print(y)
+ }
+\end{Sinput}
+\begin{Soutput}
+[1] 100
+[1] 121
+[1] 144
+[1] 169
+\end{Soutput}
+\begin{Sinput}
+ for (lbl in c("a", "e", "i", "o")) cat(paste("šal", 
+     lbl, ", ", sep = ""))
+\end{Sinput}
+\begin{Soutput}
+šala, šale, šali, šalo, 
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Animacija\\Kam gre  porazdelitev $t$, ko naraščajo stopinje prostosti?}
+\begin{Schunk}
+\begin{Sinput}
+ n <- seq(1, 30, 0.01)
+ x <- seq(-5, 5, length = 100)
+ for (df in n) {
+     plot(x, dt(x, df), type = "l", lwd = 7, col = 4, 
+         main = df, ylim = c(0, 0.4))
+     lines(x, dnorm(x), type = "l", lwd = 3, col = 2)
+ }
+ df
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Zanka se vrti do izpolnitve pogoja}
+\code{while(cond) expr}\\
+Število poskusov do prvega uspeha, če je $p=0.2$
+\begin{Schunk}
+\begin{Sinput}
+ set.seed(123)
+ (x <- as.numeric(runif(20) < 0.2))
+\end{Sinput}
+\begin{Soutput}
+ [1] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0
+\end{Soutput}
+\begin{Sinput}
+ i <- 1
+ while (x[i] != 1) {
+     i <- i + 1
+ }
+ i
+\end{Sinput}
+\begin{Soutput}
+[1] 6
+\end{Soutput}
+\end{Schunk}
+
+Bolj \R-jevsko:\vspace{-0.5cm}
+\begin{Schunk}
+\begin{Sinput}
+ which(x == 1)
+\end{Sinput}
+\begin{Soutput}
+[1]  6 15 18
+\end{Soutput}
+\begin{Sinput}
+ which(x == 1)[1]
+\end{Sinput}
+\begin{Soutput}
+[1] 6
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{\code{repeat}}
+\begin{Schunk}
+\begin{Sinput}
+ x
+\end{Sinput}
+\begin{Soutput}
+ [1] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0
+\end{Soutput}
+\begin{Sinput}
+ i <- 1
+ repeat {
+     if (x[i] == 1) 
+         break
+     i <- i + 1
+ }
+ i
+\end{Sinput}
+\begin{Soutput}
+[1] 6
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Stopnja značilnosti}
+\begin{Schunk}
+\begin{Sinput}
+ stars <- function(p) {
+     alfa <- c(0.05, 0.01, 0.001, 0)
+     st <- ""
+     i <- 1
+     while (p <= alfa[i]) {
+         st <- paste(st, "*", sep = "")
+         i <- i + 1
+     }
+     if (st == "") 
+         st <- "NS"
+     return(st)
+ }
+\end{Sinput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+ p <- 0.002
+ cat("p =", p, stars(p), "\n")
+\end{Sinput}
+\begin{Soutput}
+p = 0.002 ** 
+\end{Soutput}
+\begin{Sinput}
+ sapply(c(0.5, 0.05, 0.005, 5e-04), stars)
+\end{Sinput}
+\begin{Soutput}
+[1] "NS"  "*"   "**"  "***"
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{paketi !admin}
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{paketi !admin}
+\fct{.libPaths}
+\begin{Schunk}
+\begin{Sinput}
+ .libPaths()
+\end{Sinput}
+\begin{Soutput}
+[1] "D:/RUSER/r/win-library/2.15"        
+[2] "C:/Program Files/R/R-2.15.1/library"
+\end{Soutput}
+\end{Schunk}
+
+Npr:
+
+\code{.libPaths("H:/R/library")}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+\section{ML}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{ML - metoda največjega verjetja}
+\url{http://ablejec.nib.si/pub/rps/MetodeS.pdf}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Metoda največjega verjetja (ML)}
+\begin{center}
+ \vspace{0pt} 
+\animategraphics[scale=0.45,poster=first,every=1,controls]{25}{./figs/SwPres-mleMean}{}{} %
+\end{center}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Mediana, aritmetična  in geometrijska sredina}
+\url{http://bit.ly/XA8qdX}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\section{linearni model}
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{linearni model}
+
+\end{frame}
+%% <<<<<<---------------------|
+
+
+% ----------------------------------------------------------------
+\bibliographystyle{amsplain}
+\bibliography{ab-general}
+\end{document}
+% ----------------------------------------------------------------

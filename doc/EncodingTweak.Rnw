@@ -1,0 +1,389 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+\documentclass[a4paper,12pt]{article}
+%\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 39 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2010-05-26 #$ $}
+\newcommand{\SVNId}{$ $Id: Sweave.Rnw 39 2010-05-25 22:22:19Z ABlejec $ $}
+\input{abpkg}
+\input{abcmd}
+\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\input{mysweave}
+\SweaveOpts{eps=false,prefix.string=./figs/bla,concordance=true}
+%\SweaveOpts{echo=false}
+\setkeys{Gin}{width=0.8\textwidth}  % set graphicx parameter
+%\SweaveOpts{keep.source=true}
+\usepackage{lmodern}
+\input{abfont}
+
+% ----------------------------------------------------------------
+\begin{document}
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+%%% \setkeys{Gin}{width=0.9\textwidth}
+% ----------------------------------------------------------------
+\title{}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\maketitle
+% ----------------------------------------------------------------
+%\begin{abstract}
+%
+%\end{abstract}
+% ----------------------------------------------------------------
+\tableofcontents
+<<Author:,echo=FALSE>>=
+###############################################
+##                                           ##
+## (c) Andrej Blejec (andrej.blejec@nib.si)  ##
+##                                           ##
+###############################################
+@
+<<initialize,echo=false,results=hide>>=
+options(width=70)
+library(Hmisc)
+#library(xlsReadWrite)
+@
+
+\section{}
+
+
+<<>>=
+Sweave <- 
+function (file, driver = RweaveLatex(), syntax = getOption("SweaveSyntax"),
+    encoding = "", ...)
+{
+    if (is.character(driver))
+        driver <- get(driver, mode = "function")()
+    else if (is.function(driver))
+        driver <- driver()
+    if (is.null(syntax))
+        syntax <- SweaveGetSyntax(file)
+    if (is.character(syntax))
+        syntax <- get(syntax, mode = "list")
+    if (.Platform$OS.type == "windows")
+        file <- chartr("\\", "/", file)
+    text <- SweaveReadFile(file, syntax, encoding = encoding)
+    attr(file, "encoding") <- encoding <- attr(text, "encoding")
+    srcFilenames <- attr(text, "files")
+    srcFilenum <- attr(text, "srcFilenum")
+    srcLinenum <- attr(text, "srcLinenum")
+    drobj <- driver$setup(file = file, syntax = syntax, ...)
+    on.exit(driver$finish(drobj, error = TRUE))
+    syntax <- attr(text, "syntax")
+    if (!is.na(envopts <- Sys.getenv("SWEAVE_OPTIONS", NA)))
+        drobj$options <- SweaveParseOptions(envopts, drobj$options,
+            driver$checkopts)
+    drobj$filename <- file
+    mode <- "doc"
+    chunknr <- 0L
+    chunk <- NULL
+    chunkopts <- NULL
+    namedchunks <- list()
+    prevfilenum <- 0L
+    prevlinediff <- 0L
+    for (linenum in seq_along(text)) {
+        line <- text[linenum]
+        filenum <- srcFilenum[linenum]
+        linediff <- srcLinenum[linenum] - linenum
+        if (nzchar(Sys.getenv("R_DEBUG_Sweave"))) {
+            cat(sprintf("l.%3d: %30s -'%4s'- ", linenum, substr(line,
+                1, 30), mode))
+            cat(sprintf("%16s\n", system(paste("ls -s", summary(drobj$output)$description),
+                intern = TRUE)))
+        }
+        if (length(grep(syntax$doc, line))) {
+            if (mode == "doc") {
+                if (!is.null(chunk))
+                  drobj <- driver$writedoc(drobj, chunk)
+            }
+            else {
+                if (!is.null(chunkopts$label))
+                  namedchunks[[chunkopts$label]] <- chunk
+                if (!is.null(chunk))
+                  drobj <- driver$runcode(drobj, chunk, chunkopts)
+                mode <- "doc"
+            }
+            chunk <- NULL
+        }
+        else if (length(grep(syntax$code, line))) {
+            if (mode == "doc") {
+                if (!is.null(chunk))
+                  drobj <- driver$writedoc(drobj, chunk)
+            }
+            else {
+                if (!is.null(chunkopts$label))
+                  namedchunks[[chunkopts$label]] <- chunk
+                if (!is.null(chunk))
+                  drobj <- driver$runcode(drobj, chunk, chunkopts)
+            }
+            mode <- "code"
+            chunkopts <- sub(syntax$code, "\\1", line)
+            chunkopts <- SweaveParseOptions(chunkopts, drobj$options,
+                driver$checkopts)
+            file <- srcFilenames[filenum]
+            chunk <- paste0("#line ", linenum + linediff + 1L,
+                " \"", basename(file), "\"")
+            attr(chunk, "srclines") <- linenum + linediff
+            attr(chunk, "srcFilenum") <- filenum
+            attr(chunk, "srcFilenames") <- srcFilenames
+            chunknr <- chunknr + 1L
+            chunkopts$chunknr <- chunknr
+        }
+        else {
+            if (mode == "code" && length(grep(syntax$coderef,
+                line))) {
+                chunkref <- sub(syntax$coderef, "\\1", line)
+                if (!(chunkref %in% names(namedchunks))) {
+                  warning(gettextf("reference to unknown chunk %s",
+                    sQuote(chunkref)), call. = TRUE, domain = NA)
+                  next
+                }
+                else {
+                  file <- srcFilenames[filenum]
+                  line <- c(namedchunks[[chunkref]], paste0("#line ",
+                    linenum + linediff + 1L, " \"", basename(file),
+                    "\""))
+                }
+            }
+            if (mode == "code" && (prevfilenum != filenum ||
+                prevlinediff != linediff)) {
+                file <- srcFilenames[filenum]
+                line <- c(paste0("#line ", linenum + linediff,
+                  " \"", basename(file), "\""), line)
+            }
+            srclines <- c(attr(chunk, "srclines"), rep(linenum +
+                linediff, length(line)))
+            srcfilenum <- c(attr(chunk, "srcFilenum"), rep(filenum,
+                length(line)))
+            chunk <- c(chunk, line)
+            attr(chunk, "srclines") <- srclines
+            attr(chunk, "srcFilenum") <- srcfilenum
+            attr(chunk, "srcFilenames") <- srcFilenames
+        }
+        prevfilenum <- filenum
+        prevlinediff <- linediff
+    }
+    if (!is.null(chunk)) {
+        drobj <- if (mode == "doc")
+            driver$writedoc(drobj, chunk)
+        else driver$runcode(drobj, chunk, chunkopts)
+    }
+    on.exit()
+    drobj$srcFilenames <- srcFilenames
+    driver$finish(drobj)
+}
+
+@
+
+<<>>=
+SweaveReadFile <- 
+function (file, syntax, encoding = "")
+{
+    f <- file[1L]
+    bf <- basename(f)
+    df <- dirname(f)
+    if (!file.exists(f)) {
+        f <- list.files(df, full.names = TRUE, pattern = paste0(bf,
+            syntax$extension))
+        if (length(f) == 0L)
+            stop(gettextf("no Sweave file with name %s found",
+                sQuote(file[1L])), domain = NA)
+        else if (length(f) > 1L)
+            stop(paste(gettextf("%d Sweave files for basename %s found",
+                length(f), sQuote(file[1L])), paste(":\n         ",
+                f, collapse = "")), domain = NA)
+    }
+    text <- readLines(f[1L], warn = FALSE)
+    srcLinenum <- seq_along(text)
+    if (encoding != "bytes") {
+        enc <- getVignetteEncoding(text, convert = TRUE)
+        if (enc == "non-ASCII") {
+            enc <- if (nzchar(encoding)) {
+                encoding
+            }
+            else {
+                stop(sQuote(basename(file)), " is not ASCII and does not declare an encoding",
+                  domain = NA, call. = FALSE)
+            }
+        }
+        else if (enc == "unknown") {
+            stop(sQuote(basename(file)), " declares an encoding that Sweave does not know about",
+                domain = NA, call. = FALSE)
+        }
+        if (nzchar(enc))
+            text <- iconv(text, enc, "")
+        else enc <- "ASCII"
+    }
+    else enc <- "bytes"
+    pos <- grep(syntax$syntaxname, text)
+    if (length(pos) > 1L)
+        warning(gettextf("more than one syntax specification found, using the first one"),
+            domain = NA)
+    if (length(pos) > 0L) {
+        sname <- sub(syntax$syntaxname, "\\1", text[pos[1L]])
+        syntax <- get(sname, mode = "list")
+        if (!identical(class(syntax), "SweaveSyntax"))
+            stop(gettextf("object %s does not have class \"SweaveSyntax\"",
+                sQuote(sname)), domain = NA)
+        text <- text[-pos]
+        srcLinenum <- srcLinenum[-pos]
+    }
+    srcFilenum <- rep(1, length(srcLinenum))
+    if (!is.null(syntax$input)) {
+        while (length(pos <- grep(syntax$input, text))) {
+            pos <- pos[1L]
+            ifile <- file.path(df, sub(syntax$input, "\\1", text[pos]))
+            if (any(ifile == file)) {
+                stop(paste(gettextf("recursive Sweave input %s in stack",
+                  sQuote(ifile)), paste("\n         ", seq_len(file),
+                  ": ", rev(file), collapse = "")), domain = NA)
+            }
+            itext <- SweaveReadFile(c(ifile, file), syntax, encoding = encoding)
+            pre <- seq_len(pos - 1L)
+            post <- seq_len(length(text) - pos) + pos
+            text <- c(text[pre], itext, text[post])
+            srcLinenum <- c(srcLinenum[pre], attr(itext, "srcLinenum"),
+                srcLinenum[post])
+            srcFilenum <- c(srcFilenum[pre], attr(itext, "srcFilenum") +
+                length(f), srcFilenum[post])
+            f <- c(f, attr(itext, "files"))
+        }
+    }
+    attr(text, "syntax") <- syntax
+    attr(text, "files") <- f
+    attr(text, "encoding") <- enc
+    attr(text, "srcLinenum") <- srcLinenum
+    attr(text, "srcFilenum") <- srcFilenum
+    text
+}
+
+@
+
+<<>>=
+getVignetteEncoding <- 
+function (lines, convert = FALSE)
+{
+    poss <- grep("^[[:space:]]*%[[:space:]]*\\\\usepackage\\[([[:alnum:]]+)\\]\\{inputen[cx]\\}",
+        lines, useBytes = TRUE)
+    start <- grep("^[[:space:]]*\\\\begin\\{document\\}", lines,
+        useBytes = TRUE)
+    if (length(start))
+        poss <- poss[poss < start[1L]]
+    if (!length(poss)) {
+        asc <- iconv(lines, "latin1", "ASCII")
+        ind <- is.na(asc) | asc != lines
+        if (any(ind))
+            return("non-ASCII")
+        return("")
+    }
+    poss <- lines[poss[1L]]
+    res <- gsub("^[[:space:]]*\\\\usepackage\\[([[:alnum:]]+)\\].*",
+        "\\1", poss)
+    if (convert) {
+        switch(res, utf8 = , utf8x = "UTF-8", latin1 = , `iso-8859-1` = "latin1",
+            latin2 = , `iso-8859-2` = "latin2", latin9 = , `iso-8859-15` = "latin-9",
+            latin10 = , `iso-8859-16` = "latin10", cyrillic = ,
+            `iso-8859-5` = "ISO-8859-5", `koi8-r` = "KOI8-R",
+            arabic = "ISO-8859-6", greek = , `iso-8859-7` = "ISO-8859-7",
+            hebrew = , `iso-8859-8` = "ISO-8859-8", ansinew = "CP1252",
+            applemac = "macroman", cp1250 = "CP1250", cp1252 = "CP1252",
+            cp1257 = "CP1257", "unknown")
+    }
+    else res
+}
+
+@
+
+% ----------------------------------------------------------------
+%\bibliographystyle{chicago}
+%\addcontentsline{toc}{section}{\refname}
+%\bibliography{ab-general}
+%--------------------------------------------------------------
+
+%\clearpage
+%\appendix
+%\phantomsection\addcontentsline{toc}{section}{\appendixname}
+%\section{\R\ funkcije}
+%\input{}
+
+\clearpage
+\section*{SessionInfo}
+{\small
+<<sessionInfo,results=tex,echo=false>>=
+cat(win.version(),"\n")
+toLatex(sessionInfo())
+cat("Project path:\\verb'",dirname(getwd()),"'\\\\\n")
+mainFile <- commandArgs(trailingOnly = TRUE)
+#
+mainFilePath <- file.path("../doc", mainFile[1])
+cat("Main file :\\verb'", mainFilePath, "'\n")
+#
+mainFile <- strsplit(mainFile,'.',fixed=TRUE)[[1]][1]
+projectName <- rev((strsplit(dirname(getwd()), "/"))[[1]])[1]
+#
+@
+
+\subsection*{View as vignette}
+Project files can be viewed by pasting this code to \R\ console:\\
+\begin{Schunk}
+\begin{Sinput}
+<<projectFiles,echo=false,results=tex>>=
+cat('> projectName <-"',projectName,'"; ',sep="")
+cat(' mainFile <-"',mainFile,'"',sep="")
+#
+@
+
+\end{Sinput}
+\end{Schunk}
+<<vignette,eval=false>>=
+commandArgs()
+library(tkWidgets)
+openPDF(file.path(dirname(getwd()),"doc",
+paste(mainFile,"PDF",sep=".")))
+viewVignette("viewVignette", projectName, #
+file.path("../doc",paste(mainFile,"Rnw",sep=".")))
+#
+@
+
+\vfill \hrule \vspace{3pt} \footnotesize{
+%Revision \SVNId\hfill (c) A. Blejec%\input{../_COPYRIGHT.}
+%\SVNRevision ~/~ \SVNDate
+\noindent
+\texttt{Git Revision: \gitCommitterUnixDate \gitAbbrevHash{} (\gitCommitterDate)} \hfill \copyright A. Blejec\\
+\texttt{ \gitReferences} \hfill \verb'\Sexpr{mainFilePath}'\\
+
+}
+
+<<eval=FALSE,echo=FALSE>>=
+# getrootpath <- function() {
+# fp <- (strsplit(getwd(), "/"))[[1]]
+# file <- file.path(paste(fp[-length(fp)], collapse = "/"))
+# return(file)
+# }
+# fileName <- function(name="bla",ext="PDF") paste(name,ext,sep=".")
+@
+
+
+\end{document}
+% ----------------------------------------------------------------

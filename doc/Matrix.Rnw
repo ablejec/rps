@@ -1,0 +1,731 @@
+% -*- TeX:Rnw -*-
+% ----------------------------------------------------------------
+% .R Sweave file  ************************************************
+% ----------------------------------------------------------------
+%%
+% \VignetteIndexEntry{}
+% \VignetteDepends{}
+% \VignettePackage{}
+%\documentclass[a4paper,12pt]{article}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc} %% must be here for Sweave encoding check
+\newcommand{\SVNRevision}{$ $Rev: 3 $ $}
+%\newcommand{\SVNDate}{$ $Date:: 2009-02-2#$ $}
+\newcommand{\SVNId}{$ $Id: program.Rnw 3 2009-02-22 17:36:08Z ABlejec $ $}
+%\usepackage{babel}
+%\input{abpkgB}
+%\input{abpkg}
+\input{abBeam}
+\input{abcmd}
+%\input{abpage}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{amsmath,amssymb}
+\usepackage{colortbl}
+\usepackage{Sweave}
+\input{mysweaveB}
+\newcommand{\BV}{}
+\newcommand{\EV}{}
+\newcommand{\myemph}[1]{{\color{Sgreen} \textit{#1}}}
+\SweaveOpts{eps=false,prefix.string=./figs/SwPres,concordance=true}
+%\SweaveOpts{echo=false}
+%\usepackage{lmodern}
+%\input{abfont}
+\SweaveOpts{keep.source=FALSE}
+% ----------------------------------------------------------------
+\title{Matrike}
+\author{A. Blejec}
+%\address{}%
+%\email{}%
+%
+%\thanks{}%
+%\subjclass{}%
+%\keywords{}%
+
+%\date{}%
+%\dedicatory{}%
+%\commby{}%
+\begin{document}
+\mode<article> {\maketitle}
+\mode<presentation> {\frame{\titlepage}}
+\tableofcontents
+% ----------------------------------------------------------------
+\begin{abstract}
+ Nekaj o funkcijah za delo z matrikami in nekaj primerov iz multivariatne analize.
+\end{abstract}
+% -------------------------------------------------------------
+%% Sweave settings for includegraphics default plot size (Sweave default is 0.8)
+%% notice this must be after begin{document}
+% \setkeys{Gin}{width=0.9\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
+% ----------------------------------------------------------------
+<<Author:,echo=FALSE>>=
+###################################################
+##                                               ##
+## (c) Andrej Blejec (andrej.blejec@nib.si)      ##
+##                                               ##
+###################################################
+@
+<<initialize,echo=false,results=hide>>=
+options(width=65)
+library(Hmisc)
+#library(xlsReadWrite)
+if(!interactive()) options(prompt=" ")
+@
+
+
+Zbrali smo nekaj podatkov o študentih, s katerimi si bomo lahko poskusili odgovoriti.
+
+%% <<<<<<---------------------|
+Nato zberemo podatke, s katerimi bomo poskusili odgovoriti na vprašanja. Ker predvidevamo, da nas bo zanimalo še kaj, zberemo podatke o še nekaj spremenljivkah.
+<<lfn>>=
+lfn <- "Podatki2012.txt"
+fpath <- "http://bit.ly/16oBVpR"
+@
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Podatki}
+Podaki so o študentih 3. letnika biologije v letu 2012/13 so v datoteki \file{lfn} in na \url{http://bit.ly/16oBVpR}
+<<Preberi podatke>>=
+fpath <- file.path("../data",lfn)
+#fpath <- "http://bit.ly/16oBVpR"
+data <- read.table(fpath,header=TRUE,sep="\t")
+names(data)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Popravljanje podatkov}
+Odstranimo ta starga
+<<>>=
+data <- data[data$starost<30,]
+@
+Podatke o mesecu 0 spremenimo v \code{NA}
+
+<<>>=
+data[data$mesec==0,"mesec"] <- NA
+table(data$mesec)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Sprememba podatkov o velikosti majice}
+<<majica>>=
+table(data$majica)
+data$majica[data$majica=="XL"] <- "L"
+data$majica[data$majica=="XS"] <- "S"
+data$majica <- ordered(data$majica,levels =c("S","M","L"))
+str(data$majica)
+table(data$majica)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\section{Matrični račun}
+\subsection{Priprava vektorjev in matrik}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Vektorji}
+Vektor pripravimo kot $n$-terico s pomočjo funkcije \texttt{c}:
+<<strip.white=all>>=
+# vektorja x in y
+x <- c(1,2,-1)
+y <- c(2,1,6)
+x
+y
+@
+Vektor ima dolžino:
+<<>>=
+length(x)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Vektorska aritmetika}
+Z vektorji lahko računamo po komponentah:
+
+<<>>=
+2*x
+x+y
+x-y
+x*y
+x/y
+x^y
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\subsection{Matrike}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+Za ročni vnos in urejanje matrik lahko uporabimo urejevalec tabel \code{edit}.
+
+<<make.matrix,eval=FALSE>>=
+if(interactive()) {
+    X0<-make.matrix(n=5,m=2)
+    X0
+    }
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+Na voljo imamo funkcije, za manipulacijo matrik in pomembne operacije nad matrikami
+Matrike množimo s pomočjo operatorja \verb"%*%",
+transpozicijo pa naredimo s pomočjo funkcije \code{t}. Običajni
+aritmetični parametri delujejo  po komponentah:
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Množenje \code{\%*\%} in transpozicija \fct{t}}
+<<>>=
+(B <- cbind(x,y))
+(A <- matrix(c(1,2,-1,0),2,2))
+(C <- (B%*%A))
+t(C)
+B+C
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+\subsection{Nekaj statističnih zanimivosti matrik}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+<<>>=
+X0 <- cbind(x,y)
+X0
+X <- X0
+dim(X)
+n<-dim(X)[1]
+dimnames(X)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Povprečja}
+<<povprečja spremenljivk>>=
+M<-apply(X0,2,mean)
+M
+
+@
+matrika povprečij
+<<matrika povprečij>>=
+t(t(rep(1,n)))%*%t(M)
+
+@
+
+
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+vsredinjena matrika podatkov
+<<vsredinjena matrika podatkov>>=
+X<-scale(X,scale=F)
+X
+
+@
+vektor povprečij izvlečemo s funkcijo attr
+<<vektor povprečij izvlečemo s funkcijo attr>>=
+attr(X,"scaled:center")
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+<<>>=
+t(X)
+X
+@
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Matrika SSP}
+<<SSP>>=
+# SSP
+C<-t(X)%*%X
+C
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kovariančna matrika}
+<<>>=
+# kovariančna matrika
+S<-C/(n-1)
+S
+cov(X)
+diag(S)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Matrika varianc}
+<<>>=
+# matrika varianc
+diag(diag(S))
+SD1<-sqrt(diag(1/diag(S)))
+SD1
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Korelacijska matrika}
+<<>>=
+# korelacijska matrika
+R<-SD1%*%S%*%SD1
+R
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Še enkrat}
+<<>>=
+SX<-scale(X)
+# pa še enkrat R
+t(SX)%*%SX/(n-1)
+# pa še enkrat
+cor(X)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+Opisne statistike za matriko lahko dobimo na različne načine.
+Centroid (vektor povprečij) lahko izvlečemo s pomočjo funkcije
+\code{colMeans}, s funkcijo \code{scale}, lahko pa tudi z
+\code{apply}:
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Centroidi na več načinov}
+<<colMeans>>=
+(X <- cbind(x,y))
+(colMeans(X))
+(attr(scale(X),"scaled:center"))
+(apply(X,2,mean))
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+Za dodatne funkcije si oglejte \code{help(colMeans)}.
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Standardni odkloni}
+Standardne odklone bi lahko izvlekli kot koren diagonal
+kovariančne matrike, kot atribut \code{scale} ali pa z \code{apply}:
+
+<<sd>>=
+(sqrt(diag(var(X))))
+(attr(scale(X),"scaled:scale"))
+(apply(X,2,sd))
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\subsection{Funkcije za linearno algebro}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Funkcije za linearno algebro}
+Na voljo imamo funkcije, za manipulacijo matrik in pomembne operacije nad matrikami
+\begin{itemize*}
+  \item \fct{t} transponiranje matrik
+  \item \fct{eigen} lastne vrednosti
+  \item \fct{solve} inverzna matrika
+  \item \fct{det} determinanta matrike
+  \item sled izračunamo kot vsoto diagonalnih elementov
+\end{itemize*}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Lastni vektorji}
+<<lastni vektorji>>=
+S <- matrix(c( 10, 3, 3, 2 ),2,2)
+S
+eigen(S)
+det(S)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Inverzna matrika}
+<<>>=
+S1 <- solve(S)
+S%*%S1
+
+@
+Takole se znebimo zelo majhnih vrednosti v izpisu
+
+<<>>=
+zapsmall(S%*%S1)
+
+@
+
+Sled bi lahko izračunali kot
+
+<<>>=
+sum(diag(S))
+@
+
+\end{frame}
+%% <<<<<<---------------------|
+
+Primerjajte determinanto in sled z lastnima vrednostma.
+
+<<>>=
+names(data)
+
+@
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+\begin{itemize*}
+  \item Iz podatkov \code{data} izberite nekaj (3 ali 4) številske spremenljivke in formirajte matriko \code{X}
+    \item Narišite pare razsevnih diagramov - funkcija \fct{pairs}
+  \item Poiščite povprečne vrednosti spremenljivk
+  \item Izračunajte kovariančno in korelacijsko matriko
+\end{itemize*}
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Podatki}
+<<>>=
+X <- data[,c("masa","visina","mesec","roke","cevelj")]
+head(X)
+tail(X)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+<<>>=
+cor(X,use="complete.obs")
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+\section{Test hipotez}
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Test hipotez}
+Ali so fantje večji od deklet
+<<velikost>>=
+t.test(visina~spol,data=data)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Funkcija za Student t-test}
+Ali so fantje večji od deklet
+<<ttest>>=
+student <- function(x,y,delta=0){
+# funkcija za dva vzorca
+n1 <- length(x)
+n2 <- length(y)
+m1 <- mean(x)
+m2 <- mean(y)
+s1 <- sd(x)
+s2 <- sd(y)
+####
+ss <- ((n1-1)*s1^2+(n2-1)*s2^2)/(n1+n2-2)
+t <- (m1-m2-delta)/sqrt(ss)*sqrt(n1*n2/(n1+n2))
+# debug
+#print(t)
+p <- 2 * (1- pt(abs(t),n1+n2-2)  )
+cat("\tStudent t-test\n\np =",p,"\n")
+invisible(p)
+}
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Preizkus}
+<<>>=
+X1 <- rnorm(20)
+X2 <- rnorm(10,5)
+student(X1,X2)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Visina}
+<<>>=
+X1 <- visina[spol=="M"]
+X2 <- visina[spol=="F"]
+student(X1,X2)
+
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Permutacijski test}
+$$H_0: \mu_1=\mu_2(=\mu)$$
+Če imamo opravka z vzorcema iz iste populacije, potem je lahgko v vsakem vzorcu katerakoli od izmerjenih $n_1+n_2$ vrednosti. Če imam npr. \Sexpr{(n <- 10)}
+<<>>=
+n
+sample(10,4)
+@
+lahko takole določim, katere vrednosti spadajo v prvi vzorec.
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Podatki}
+Zgenerirajmo podatke iz populacije s povprečjem 10
+<<>>=
+set.seed(555)
+n1 <- 5; mu1 <- 10; sd1 <- 1
+n2 <- 5; mu2 <- 10; sd2 <- 1
+n <- n1+n2
+X1 <- round(rnorm(n1,mu1,sd1),1)
+X2 <- round(rnorm(n2,mu2,sd2),1)
+X1
+X2
+X <- c(X1,X2)
+ind <- c(rep(1,n1),rep(2,n2))
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Funkcija za razliko povprečij}
+
+<<>>=
+dx <- function(x,y) mean(y)-mean(x)
+dx(X1,X2)
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Premešajmo podatke}
+<<>>=
+set.seed(432)
+(smp1 <- sample(n,n1))
+(smp2 <- (1:n)[-smp1])
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Premestitev vrednosti}
+<<vzorca,echo=FALSE,fig=TRUE>>=
+plot(X,rep(0,n),col=ind,pch=16,ylab="")
+points(X[smp1],rep(-1,n1))
+points(X[smp2],rep(1,n2))
+arrows(X[smp1],rep(0,n1),X[smp1],rep(-1,n1),col=ind[smp1])
+arrows(X[smp2],rep(0,n2),X[smp2],rep(1,n2),col=ind[smp2])
+abline(v=mean(X[smp1]),col=4)
+abline(v=mean(X[smp2]),col=4)
+points(c(mean(X[smp1]),mean(X[smp2])),c(-1,1),pch=16,col=4)
+points(c(mean(X1),mean(X2)),c(0,0),col=4,cex=2)
+dx(X[smp1],X[smp2])
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Kako je narisano}
+<<>>=
+plot(X,rep(0,n),col=ind,pch=16,ylab="")
+points(X[smp1],rep(-1,n1))
+points(X[smp2],rep(1,n2))
+arrows(X[smp1],rep(0,n1),X[smp1],rep(-1,n1),col=ind[smp1])
+arrows(X[smp2],rep(0,n2),X[smp2],rep(1,n2),col=ind[smp2])
+abline(v=mean(X[smp1]),col=4)
+abline(v=mean(X[smp2]),col=4)
+points(c(mean(X[smp1]),mean(X[smp2])),c(-1,1),pch=16,col=4)
+points(c(mean(X1),mean(X2)),c(0,0),col=4,cex=2)
+dx(X[smp1],X[smp2])
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{Funkcija}
+<<>>=
+perm.test <- function(x,X1,X2){
+n1 <- length(X1)
+n2 <- length(X2)
+n <- n1+n2
+X <- c(X1,X2)
+#
+ind <- c(rep(1,n1),rep(2,n2))
+#
+(smp1 <- sample(n,n1))
+(smp2 <- (1:n)[-smp1])
+#
+plot(X,rep(0,n),col=ind,pch=16,ylab="")
+points(X[smp1],rep(-1,n1))
+points(X[smp2],rep(1,n2))
+arrows(X[smp1],rep(0,n1),X[smp1],rep(-1,n1),col=ind[smp1])
+arrows(X[smp2],rep(0,n2),X[smp2],rep(1,n2),col=ind[smp2])
+abline(v=mean(X[smp1]),col=4)
+abline(v=mean(X[smp2]),col=4)
+points(c(mean(X[smp1]),mean(X[smp2])),c(-1,1),pch=16,col=4)
+points(c(mean(X1),mean(X2)),c(0,0),col=4,cex=2)
+return(dx(X[smp1],X[smp2]))
+}
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+
+<<>>=
+dx <- function(x,y) mean(y)-mean(x)
+perm.test(x,X1,X2)
+par(mfrow=c(2,2))
+D <- sapply(1:1000,FUN=perm.test,X1=X1,X2=X2)
+nasD=dx(X1,X2)
+hist(D,xlim=c(-3,3))
+abline(v=nasD,col=2,lwd=4)
+
+@
+
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+<<fig=TRUE>>=
+n <- 50
+X <- X1 # rnorm(n,10,2)
+d <- density(X)
+plot(d,xlim=c(0,30))
+rug(X)
+
+Y <- X2 #runif(n,10,20)
+lines(density(Y,width=),col=2,xpd=TRUE)
+
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+<<fig=TRUE>>=
+hist(X,prob=TRUE,xlim=c(5,30),
+col=rgb(0,0,1,.75))
+lines(density(X),col=2)
+rug(X)
+x <- seq(5,20,length=100)
+head(x)
+length(x)
+points(x,dnorm(x,mean(X),sd(X)))
+hist(Y,prob=TRUE,add=TRUE,
+col=rgb(0,1,0,.5))
+@
+\end{frame}
+%% <<<<<<---------------------|
+
+%% |--------------------->>>>>>
+\begin{frame}[fragile]
+\frametitle{}
+\begin{itemize}
+   \item io
+   \item kontrolne strukture
+   \item paketi !admin
+   \item linearni model
+   \item ML
+ \end{itemize}
+\end{frame}
+%% <<<<<<---------------------|
+
+
+
+
+
+
+
+% ----------------------------------------------------------------
+\bibliographystyle{amsplain}
+\bibliography{ab-general}
+\end{document}
+% ----------------------------------------------------------------
