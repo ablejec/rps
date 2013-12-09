@@ -239,13 +239,13 @@ t(t(rep(1,n)))%*%t(M)
 %% |--------------------->>>>>>
 \begin{frame}[fragile]
 \frametitle{}
-vsredinjena matrika podatkov
+Vsredinjena matrika podatkov
 <<vsredinjena matrika podatkov>>=
 X<-scale(X,scale=F)
 X
 
 @
-vektor povprečij izvlečemo s funkcijo attr
+Vektor povprečij izvlečemo s funkcijo attr
 <<vektor povprečij izvlečemo s funkcijo attr>>=
 attr(X,"scaled:center")
 

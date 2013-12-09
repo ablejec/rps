@@ -23,7 +23,7 @@
 \SweaveOpts{eps=false,prefix.string=./figs/bla,concordance=true}
 %\SweaveOpts{echo=false}
 \setkeys{Gin}{width=0.8\textwidth}  % set graphicx parameter
-%\SweaveOpts{keep.source=true}
+\SweaveOpts{keep.source=FALSE}
 \usepackage{lmodern}
 \input{abfont}
 
@@ -57,7 +57,7 @@
 ##                                           ##
 ## (c) Andrej Blejec (andrej.blejec@nib.si)  ##
 ##                                           ##
-############################################### 
+###############################################
 @
 <<initialize,echo=false,results=hide>>=
 options(width=70)
@@ -65,7 +65,7 @@ library(Hmisc)
 #library(xlsReadWrite)
 @
 
-\section{Funkcija}
+\section{Standardna napaka ocene}
 
 <<>>=
 n <- 4
@@ -78,6 +78,8 @@ se
 
 @
 
+\section{Funkcija}
+Funkcija za prikaz vzorčne porazdelitve.
 <<>>=
 ocene <- function(n=4,m=1000,
 FUN=rnorm,cenilka=mean, ...){
@@ -97,30 +99,39 @@ main=ctext)
 return(c(povp=E,se=se,n=n))
 }
 @
+\clearpage
+\subsection{Povprečje normalne porazdelitve}
 
 <<fig=TRUE>>=
 ocene()
 
 @
-Enakomerna porazdelitev
+\clearpage
+\subsection{Enakomerna porazdelitev}
 <<fig=TRUE>>=
 ocene(n=9,FUN=runif)
 
 @
-
+\clearpage
 <<fig=TRUE>>=
 ocene(n=9,FUN=runif,min=-3,max=3)
 
 @
-Porazdelitev median
+\clearpage
+\subsection{Porazdelitev median}
 <<fig=TRUE>>=
 ocene(n=9,cenilka=median)
 
 
 @
-Porazdelitev varianc
+\clearpage
+\subsection{Porazdelitev varianc}
 <<fig=TRUE>>=
 ocene(n=400,cenilka=var)
+@
+\clearpage
+<<fig=TRUE>>=
+ocene(n=10,cenilka=var)
 @
 
 % ----------------------------------------------------------------

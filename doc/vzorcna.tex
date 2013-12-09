@@ -23,7 +23,7 @@
 \input{./figs/bla-concordance}
 %\SweaveOpts{echo=false}
 \setkeys{Gin}{width=0.8\textwidth}  % set graphicx parameter
-%\SweaveOpts{keep.source=true}
+
 \usepackage{lmodern}
 \input{abfont}
 
@@ -53,45 +53,44 @@
 % ----------------------------------------------------------------
 \tableofcontents
 
-\section{Funkcija}
+\section{Standardna napaka ocene}
 
 \begin{Schunk}
 \begin{Sinput}
 > n <- 4
 > m <- 10
-> X <- matrix(rnorm(n*m),m,n)
-> est <- apply(X,1,mean)
+> X <- matrix(rnorm(n * m), m, n)
+> est <- apply(X, 1, mean)
 > E <- mean(est)
 > se <- sd(est)
 > se
 \end{Sinput}
 \begin{Soutput}
-[1] 0.3383287
+[1] 0.4826579
 \end{Soutput}
-\begin{Sinput}
-> 
-\end{Sinput}
 \end{Schunk}
 
+\section{Funkcija}
+Funkcija za prikaz vzorčne porazdelitve.
 \begin{Schunk}
 \begin{Sinput}
-> ocene <- function(n=4,m=1000, 
-+ FUN=rnorm,cenilka=mean, ...){
-+ ctext <- deparse(substitute(cenilka))
-+ X <- matrix(FUN(n*m,...),m,n)
-+ est <- apply(X,1,cenilka)
-+ E <- mean(est)
-+ se <- sd(est)
-+ cat("Standardna napaka: \n",se,"\n")
-+ #
-+ par(mfrow=c(2,1))
-+ hist(X,col="lightgreen",xlim=range(X))
-+ hist(est,col="lightblue",xlim=range(X),
-+ main=ctext)
-+ return(c(povp=E,se=se,n=n))
+> ocene <- function(n = 4, m = 1000, FUN = rnorm, cenilka = mean, 
++     ...) {
++     ctext <- deparse(substitute(cenilka))
++     X <- matrix(FUN(n * m, ...), m, n)
++     est <- apply(X, 1, cenilka)
++     E <- mean(est)
++     se <- sd(est)
++     cat("Standardna napaka: \n", se, "\n")
++     par(mfrow = c(2, 1))
++     hist(X, col = "lightgreen", xlim = range(X))
++     hist(est, col = "lightblue", xlim = range(X), main = ctext)
++     return(c(povp = E, se = se, n = n))
 + }
 \end{Sinput}
 \end{Schunk}
+\clearpage
+\subsection{Povprečje normalne porazdelitve}
 
 \begin{Schunk}
 \begin{Sinput}
@@ -99,77 +98,80 @@
 \end{Sinput}
 \begin{Soutput}
 Standardna napaka: 
- 0.4825507 
+ 0.5132042 
       povp         se          n 
-0.02129943 0.48255067 4.00000000 
+0.02698115 0.51320417 4.00000000 
 \end{Soutput}
-\begin{Sinput}
-> 
-\end{Sinput}
 \end{Schunk}
 \includegraphics{./figs/bla-005}
-Enakomerna porazdelitev
+\clearpage
+\subsection{Enakomerna porazdelitev}
 \begin{Schunk}
 \begin{Sinput}
-> ocene(n=9,FUN=runif)
+> ocene(n = 9, FUN = runif)
 \end{Sinput}
 \begin{Soutput}
 Standardna napaka: 
- 0.09697069 
+ 0.09601268 
       povp         se          n 
-0.49629758 0.09697069 9.00000000 
+0.49978455 0.09601268 9.00000000 
 \end{Soutput}
-\begin{Sinput}
-> 
-\end{Sinput}
 \end{Schunk}
 \includegraphics{./figs/bla-006}
-
+\clearpage
 \begin{Schunk}
 \begin{Sinput}
-> ocene(n=9,FUN=runif,min=-3,max=3)
+> ocene(n = 9, FUN = runif, min = -3, max = 3)
 \end{Sinput}
 \begin{Soutput}
 Standardna napaka: 
- 0.587588 
+ 0.5635347 
        povp          se           n 
--0.02018932  0.58758802  9.00000000 
+-0.00420401  0.56353474  9.00000000 
 \end{Soutput}
-\begin{Sinput}
-> 
-\end{Sinput}
 \end{Schunk}
 \includegraphics{./figs/bla-007}
-Porazdelitev median
+\clearpage
+\subsection{Porazdelitev median}
 \begin{Schunk}
 \begin{Sinput}
-> ocene(n=9,cenilka=median)
+> ocene(n = 9, cenilka = median)
 \end{Sinput}
 \begin{Soutput}
 Standardna napaka: 
- 0.429369 
-       povp          se           n 
--0.01332132  0.42936905  9.00000000 
+ 0.4043319 
+      povp         se          n 
+0.01685248 0.40433195 9.00000000 
 \end{Soutput}
-\begin{Sinput}
-> 
-> 
-\end{Sinput}
 \end{Schunk}
 \includegraphics{./figs/bla-008}
-Porazdelitev varianc
+\clearpage
+\subsection{Porazdelitev varianc}
 \begin{Schunk}
 \begin{Sinput}
-> ocene(n=400,cenilka=var)
+> ocene(n = 400, cenilka = var)
 \end{Sinput}
 \begin{Soutput}
 Standardna napaka: 
- 0.07405122 
+ 0.07490097 
         povp           se            n 
-  0.99686334   0.07405122 400.00000000 
+  1.00020656   0.07490097 400.00000000 
 \end{Soutput}
 \end{Schunk}
 \includegraphics{./figs/bla-009}
+\clearpage
+\begin{Schunk}
+\begin{Sinput}
+> ocene(n = 10, cenilka = var)
+\end{Sinput}
+\begin{Soutput}
+Standardna napaka: 
+ 0.4365674 
+      povp         se          n 
+ 0.9766378  0.4365674 10.0000000 
+\end{Soutput}
+\end{Schunk}
+\includegraphics{./figs/bla-010}
 
 % ----------------------------------------------------------------
 %\bibliographystyle{chicago}
@@ -187,14 +189,14 @@ Standardna napaka:
 \section*{SessionInfo}
 {\small
 Windows 7 x64 (build 7601) Service Pack 1 \begin{itemize}\raggedright
-  \item R version 2.15.1 (2012-06-22), \verb|x86_64-pc-mingw32|
+  \item R version 3.0.2 (2013-09-25), \verb|x86_64-w64-mingw32|
   \item Locale: \verb|LC_COLLATE=Slovenian_Slovenia.1250|, \verb|LC_CTYPE=Slovenian_Slovenia.1250|, \verb|LC_MONETARY=Slovenian_Slovenia.1250|, \verb|LC_NUMERIC=C|, \verb|LC_TIME=Slovenian_Slovenia.1250|
   \item Base packages: base, datasets, graphics, grDevices,
-    methods, splines, stats, utils
-  \item Other packages: Hmisc~3.10-1, patchDVI~1.9,
-    survival~2.36-14
-  \item Loaded via a namespace (and not attached):
-    cluster~1.14.2, grid~2.15.1, lattice~0.20-6, tools~2.15.1
+    grid, methods, splines, stats, utils
+  \item Other packages: cluster~1.14.4, Formula~1.1-1,
+    Hmisc~3.13-0, lattice~0.20-23, patchDVI~1.9,
+    survival~2.37-4
+  \item Loaded via a namespace (and not attached): tools~3.0.2
 \end{itemize}Project path:\verb' D:/_Y/R/rps '\\Main file :\verb' ../doc/vzorcna.Rnw '
 \subsection*{View as vignette}
 Project files can be viewed by pasting this code to \R\ console:\\
@@ -207,11 +209,10 @@ Project files can be viewed by pasting this code to \R\ console:\\
 \begin{Sinput}
 > commandArgs()
 > library(tkWidgets)
-> openPDF(file.path(dirname(getwd()),"doc",
-+ paste(mainFile,"PDF",sep=".")))
-> viewVignette("viewVignette", projectName, #
-+ file.path("../doc",paste(mainFile,"Rnw",sep=".")))
-> #
+> openPDF(file.path(dirname(getwd()), "doc", paste(mainFile, 
++     "PDF", sep = ".")))
+> viewVignette("viewVignette", projectName, file.path("../doc", 
++     paste(mainFile, "Rnw", sep = ".")))
 \end{Sinput}
 \end{Schunk}
 
