@@ -2,7 +2,8 @@
 
 ## Description
 
-
+This repo contains documents for the class  
+**Computational statistics**
 
 Andrej
 
